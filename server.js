@@ -10,7 +10,7 @@ const app = express();
 // Google OAuth 및 PostgreSQL 연결 정보
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
 const GOOGLE_CLIENT_SECRET = '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';
-const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com//auth/google/callback';
+const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
