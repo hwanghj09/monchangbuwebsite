@@ -104,7 +104,18 @@
             cursor: pointer;
             font-size: 16px;
         }
-        
+        /* 사이드바 메뉴 확장 효과 */
+.sidebar-menu li {
+    padding: 20px 10px; /* 기본 패딩 */
+    transition: all 0.3s ease-in-out; /* 부드러운 애니메이션 */
+}
+
+.sidebar-menu li:hover {
+    padding-left: 20px; /* 마우스를 올리면 왼쪽으로 확장 */
+    background-color: rgba(255, 255, 255, 0.3); /* 배경색 약간 변경 */
+    cursor: pointer; /* 포인터 커서 */
+    transform: scale(1.1); /* 크기 확대 */
+}
         table {
             width: 100%;
             border-collapse: collapse;
