@@ -104,6 +104,10 @@ app.get("/calendar", (req, res) => {
     res.render("calendar");
 });
 
+app.get("/cal", (req, res) => {
+    res.render("cal");
+});
+
 // 로그아웃 처리
 app.get("/logout", (req, res) => {
     req.logout(() => {

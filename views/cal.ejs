@@ -12,13 +12,28 @@
             font-family: 'Noto Sans KR', sans-serif;
         }
         
-        body {
-            background-color: pink;
-        }
+/* 무지개 배경 애니메이션 */
+@keyframes rainbowBackground {
+    0% { background-color: red; }
+    14% { background-color: orange; }
+    28% { background-color: yellow; }
+    42% { background-color: green; }
+    57% { background-color: blue; }
+    71% { background-color: indigo; }
+    85% { background-color: violet; }
+    100% { background-color: red; }
+}
+
+/* 웹사이트 전체 배경에 적용 */
+body {
+    animation: rainbowBackground 8s infinite linear; /* 8초마다 무지개 색으로 변환 */
+    transition: background-color 1s ease-in-out; /* 부드러운 색 전환 */
+}
         
         .container {
             margin: 0 auto;
-            background-color: rgb(167, 91, 168);
+            animation: rainbowBackground 8s infinite linear; /* 8초마다 무지개 색으로 변환 */
+            transition: background-color 1s ease-in-out; /* 부드러운 색 전환 */
             height: 112.5vh;
             position: relative;
             display: flex;
@@ -32,7 +47,8 @@
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid #eee;
-            background-color: pink;
+            animation: rainbowBackground 8s infinite linear; /* 8초마다 무지개 색으로 변환 */
+            transition: background-color 1s ease-in-out; /* 부드러운 색 전환 */
             
         }
         
@@ -53,7 +69,8 @@
         .sidebar {
             width: 140px;
             height: 100vh;
-            background-color: pink;
+            animation: rainbowBackground 8s infinite linear; /* 8초마다 무지개 색으로 변환 */
+            transition: background-color 1s ease-in-out; /* 부드러운 색 전환 */;
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
             padding-top: 15px;
@@ -191,7 +208,8 @@
     transform: translateX(-50%); /* 정확한 중앙 정렬 */
     width: 80%; /* 적당한 너비 */
     padding: 20px;
-    background-color: pink;
+    animation: rainbowBackground 8s infinite linear; /* 8초마다 무지개 색으로 변환 */
+    transition: background-color 1s ease-in-out; /* 부드러운 색 전환 */
     border-radius: 10px;
     text-align: center;
 }
@@ -214,9 +232,7 @@
     <div class="container">
         <div class="header">
             <h1>문화 창작동아리-캘린더</h1>
-            <div class="ghost-icon">
-                <a href="http://127.0.0.1:3000/cal"><img src="image/1.png" width="50" height="50"></a>
-            </div>
+            <div class="ghost-icon"><img src="image/1.png" width="50" height="50"></div>
         </div>
         
         <div class="content-wrapper">
