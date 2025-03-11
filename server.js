@@ -34,6 +34,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(express.static('views'));
+
 // 구글 로그인 전략 설정
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
