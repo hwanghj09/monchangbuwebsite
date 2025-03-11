@@ -13,12 +13,12 @@
         }
         
         body {
-            background-color: #f5f5f5;
+            background-color: rgb(160, 72, 161);
         }
         
         .container {
             margin: 0 auto;
-            background-color: white;
+            background-color: rgb(167, 91, 168);
             height: 100vh;
             position: relative;
             display: flex;
@@ -31,7 +31,7 @@
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid #eee;
-            background-color: white;
+            background-color: pink;
         }
         
         .header h1 {
@@ -51,7 +51,7 @@
         .sidebar {
             width: 140px;
             height: 100vh;
-            background-color: white;
+            background-color: pink;
             border-right: 1px solid #eee;
             padding-top: 15px;
         }
@@ -133,6 +133,14 @@
             font-weight: bold;
             font-size: 22px;
         }
+
+        .future-day {
+    background-color: white !important; /* 미래 날짜를 명확하게 흰색으로 설정 */
+}
+
+.empty-cell {
+    background-color: white !important; /* 빈 셀도 확실히 흰색으로 설정 */
+}
 
         /* 중요사항 표시 스타일 */
         .important-note {
@@ -241,9 +249,9 @@
         let rowHTML = "<tr>";
         for (let col = 0; col < 7; col++) {
             if (row === 0 && col < firstDay) {
-                rowHTML += "<td></td>";
-            } else if (date > lastDate) {
-                rowHTML += "<td></td>";
+            rowHTML += `<td class="empty-cell"></td>`; // 빈 셀에 클래스 추가
+        } else if (date > lastDate) {
+            rowHTML += `<td class="empty-cell"></td>`;
             } else {
                 let cellClass = "";
                 let fullDate = new Date(currentYear, currentMonth, date);
@@ -259,10 +267,14 @@
                     clickEvent = `onclick="openPopup(${date})"`;
                 }
 
-                if (fullDate.getTime() === todayDate.getTime()) {
-                    cellClass = "today";
-                }
-
+                if (fullDate < todayDate) {
+                cellClass = "past-day";
+            } else if (fullDate.getTime() === todayDate.getTime()) {
+                cellClass = "today";
+            } else {
+                cellClass = "future-day"; // 미래 날짜도 흰색 유지
+            }
+            
                 rowHTML += `<td class="${cellClass}" ${clickEvent}>
                                 ${date}
                                 ${savedNote ? `<span class="important-note">${savedNote}</span>` : ""}
