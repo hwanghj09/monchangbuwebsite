@@ -108,6 +108,11 @@ app.get("/cal", (req, res) => {
     res.render("cal");
 });
 
+app.get("/test", (req, res) => {
+    res.render("test");
+});
+
+
 // 로그아웃 처리
 app.get("/logout", (req, res) => {
     req.logout(() => {

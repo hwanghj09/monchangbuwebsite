@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응형 웹사이트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+        }
+        .container {
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .box {
+            background: lightblue;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            .box {
+                background: lightcoral;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>반응형 웹사이트</h1>
+    </header>
+    <div class="container">
+        <div class="grid">
+            <div class="box">박스 1</div>
+            <div class="box">박스 2</div>
+            <div class="box">박스 3</div>
+        </div>
+    </div>
+</body>
+</html>
