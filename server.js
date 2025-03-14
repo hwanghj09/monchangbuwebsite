@@ -1,11 +1,24 @@
 const express = require("express");
 const session = require("express-session");
+const bodyParser = require('body-parser');
 const passport = require("passport");
 const { Pool } = require("pg");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
+const cors = require('cors');
 
 const app = express();
+app.use(bodyParser.json());
+app.use(cors()); // CORS 문제 방지
+
+// ✅ PostgreSQL 데이터베이스 연결 설정
+const db = new Pool({
+    user: 'hwanghj09', // PostgreSQL 사용자명
+    host: 'dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com', // DB 호스트
+    database: 'mcb', // 데이터베이스 이름
+    password: 'bGTMWup7u3rpjAcDasyainqTf37vRFnu', // 비밀번호
+    port: 5432, // PostgreSQL 기본 포트
+});
 
 // Google OAuth 및 PostgreSQL 연결 정보
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
@@ -15,6 +28,7 @@ const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
 
+// ✅ PostgreSQL 연결 설정 (db 대신 pool 사용)
 const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -121,30 +135,47 @@ app.get("/logout", (req, res) => {
 });
 
 // 서버 실행
-app.listen(3000, () => console.log("✅ 서버가 http://localhost:3000 에서 실행 중!"));
+// ✅ 서버 실행
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`✅ 서버가 http://127.0.0.1:${PORT} 에서 실행 중!`);
+});
 
 app.post('/add-memo', async (req, res) => {
     const { date, content } = req.body;
 
-    if (!date || !content) {
-        return res.status(400).json({ error: "날짜와 내용을 입력하세요." });
+    console.log("📩 메모 저장 요청 수신:", date, content);
+
+    // 데이터 검증
+    if (!date || typeof content !== "string" || content.trim() === "") {
+        return res.status(400).json({ error: "❌ 날짜와 내용을 올바르게 입력하세요." });
     }
 
     try {
+        // ✅ pool.query() 사용하도록 변경
         const query = "INSERT INTO calendar_memos (date, content) VALUES ($1, $2)";
-        await db.query(query, [date, content]);
+        await pool.query(query, [date, content]);
+
+        console.log("✅ 메모 저장 완료");
         res.status(201).json({ message: "✅ 메모가 추가되었습니다!" });
     } catch (err) {
-        console.error(err);
+        console.error("❌ 메모 저장 중 오류 발생:", err);
         res.status(500).json({ error: "❌ 메모 저장 중 오류 발생" });
     }
 });
 app.get('/get-memos', async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM calendar_memos ORDER BY date");
+        // ✅ pool.query() 사용하도록 변경
+        const result = await pool.query("SELECT * FROM calendar_memos ORDER BY date");
+
+        if (!Array.isArray(result.rows)) {
+            return res.status(500).json({ error: "❌ 메모 데이터가 없습니다." });
+        }
+
+        console.log("📜 불러온 메모 데이터:", result.rows);
         res.json(result.rows);
     } catch (err) {
-        console.error(err);
+        console.error("❌ 메모 불러오기 실패:", err);
         res.status(500).json({ error: "❌ 메모 불러오기 실패" });
     }
 });

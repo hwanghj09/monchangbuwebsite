@@ -336,38 +336,57 @@
         let currentYear, currentMonth;
         let selectedDate = null; // 전역 변수 선언
 
-        async function saveNote() {
+        const API_BASE_URL = "http://127.0.0.1:3000"; // 서버 주소 설정
+
+async function saveNote() {
     let note = document.getElementById("note-input").value;
-    let dateKey = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
+    let dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
 
     if (!note) {
         alert("메모 내용을 입력하세요!");
         return;
     }
 
-    // 서버에 메모 저장 요청 보내기
-    const response = await fetch('/add-memo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: dateKey, content: note })
-    });
+    console.log("📩 저장 요청:", dateKey, note); // 서버로 보내는 데이터 확인
 
-    const result = await response.json();
-    alert(result.message);
+    try {
+        const response = await fetch(`${API_BASE_URL}/add-memo`, { // 🔄 절대 경로로 변경
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: dateKey, content: note })
+        });
 
-    closePopup();
-    loadMemos(); // 새로 메모 목록 불러오기
+        const result = await response.json();
+        console.log("🟢 서버 응답 수신:", result); // 서버 응답 확인
+
+        alert(result.message);
+
+        closePopup();
+        loadMemos(); // 새로고침하여 데이터 반영
+    } catch (error) {
+        console.error("❌ 메모 저장 중 오류 발생:", error);
+    }
 }
 async function loadMemos() {
-    const response = await fetch('/get-memos');
-    const memos = await response.json();
-    
-    let memoData = {};
-    memos.forEach(memo => {
-        memoData[memo.date] = memo.content;
-    });
+    try {
+        const response = await fetch(`${API_BASE_URL}/get-memos`); // 🔄 절대 경로로 변경
+        const memos = await response.json();
 
-    updateCalendar(memoData);
+        if (!Array.isArray(memos)) {
+            console.error("❌ 메모 데이터가 배열이 아닙니다:", memos);
+            return;
+        }
+
+        let memoData = {};
+        memos.forEach(memo => {
+            memoData[memo.date] = memo.content;
+        });
+
+        console.log("🔄 불러온 메모 데이터:", memoData); // 데이터 확인용 로그
+        updateCalendar(memoData);
+    } catch (error) {
+        console.error("❌ 메모 불러오기 실패:", error);
+    }
 }
         function updateCalendar(memoData={}) {
     const calendar = document.getElementById("calendar");
@@ -430,11 +449,12 @@ async function loadMemos() {
     }
 }
 
-        function openPopup(date) {
-            selectedDate = date;
-            document.getElementById("overlay").style.display = "block";
-            document.getElementById("note-popup").style.display = "block";
-        }
+function openPopup(date) {
+    selectedDate = date;
+    console.log("📅 선택된 날짜:", selectedDate); // 로그 추가해서 값 확인
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("note-popup").style.display = "block";
+}
 
         function closePopup() {
             document.getElementById("overlay").style.display = "none";
