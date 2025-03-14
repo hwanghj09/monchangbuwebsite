@@ -338,6 +338,13 @@
 
         const API_BASE_URL = "http://127.0.0.1:3000"; // 서버 주소 설정
 
+        (function initCalendar() {
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    currentYear = today.getFullYear();
+    currentMonth = today.getMonth();
+    loadMemos(); // ✅ 메모 데이터 불러오기 추가
+})();
+
 async function saveNote() {
     let note = document.getElementById("note-input").value;
     let dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
@@ -369,7 +376,7 @@ async function saveNote() {
 }
 async function loadMemos() {
     try {
-        const response = await fetch(`${API_BASE_URL}/get-memos`); // 🔄 절대 경로로 변경
+        const response = await fetch(`${API_BASE_URL}/get-memos`);
         const memos = await response.json();
 
         if (!Array.isArray(memos)) {
@@ -379,10 +386,12 @@ async function loadMemos() {
 
         let memoData = {};
         memos.forEach(memo => {
-            memoData[memo.date] = memo.content;
+            console.log("📜 서버에서 불러온 메모 데이터:", memo); // ✅ 확인용 로그 추가
+            let formattedDate = new Date(memo.date).toISOString().split("T")[0]; // 날짜 변환
+            memoData[formattedDate] = memo.content;
         });
 
-        console.log("🔄 불러온 메모 데이터:", memoData); // 데이터 확인용 로그
+        console.log("📅 최종 메모 데이터:", memoData); // ✅ 저장된 데이터 확인
         updateCalendar(memoData);
     } catch (error) {
         console.error("❌ 메모 불러오기 실패:", error);
@@ -418,6 +427,9 @@ async function loadMemos() {
                 let fullDate = new Date(currentYear, currentMonth, date);
                 let noteKey = `${currentYear}-${currentMonth + 1}-${date}`;
                 let dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
+                
+                console.log(`🔍 체크 중: ${dateKey} → 저장된 메모: ${memoData[dateKey] || "없음"}`); // ✅ 디버깅 로그 추가
+
                 let savedNote = memoData[dateKey] || ""; // DB에서 불러온 메모 데이터 사용
 
                 let clickEvent = ""; // 기본적으로 클릭 이벤트 없음
@@ -437,9 +449,11 @@ async function loadMemos() {
                 cellClass = "future-day"; // 미래 날짜도 흰색 유지
             }
             
+    
+                // 📌 메모가 있으면 달력에 표시하도록 수정
                 rowHTML += `<td class="${cellClass}" ${clickEvent}>
                                 ${date}
-                                ${savedNote ? `<span class="important-note">${savedNote}</span>` : ""}
+                                ${savedNote ? `<div class="important-note">${savedNote}</div>` : ""}
                             </td>`;
                 date++;
             }
