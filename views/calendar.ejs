@@ -336,7 +336,40 @@
         let currentYear, currentMonth;
         let selectedDate = null; // 전역 변수 선언
 
-        function updateCalendar() {
+        async function saveNote() {
+    let note = document.getElementById("note-input").value;
+    let dateKey = `${currentYear}-${currentMonth + 1}-${selectedDate}`;
+
+    if (!note) {
+        alert("메모 내용을 입력하세요!");
+        return;
+    }
+
+    // 서버에 메모 저장 요청 보내기
+    const response = await fetch('/add-memo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: dateKey, content: note })
+    });
+
+    const result = await response.json();
+    alert(result.message);
+
+    closePopup();
+    loadMemos(); // 새로 메모 목록 불러오기
+}
+async function loadMemos() {
+    const response = await fetch('/get-memos');
+    const memos = await response.json();
+    
+    let memoData = {};
+    memos.forEach(memo => {
+        memoData[memo.date] = memo.content;
+    });
+
+    updateCalendar(memoData);
+}
+        function updateCalendar(memoData={}) {
     const calendar = document.getElementById("calendar");
     const currentMonthElement = document.getElementById("current-month");
     const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
@@ -365,7 +398,8 @@
                 let cellClass = "";
                 let fullDate = new Date(currentYear, currentMonth, date);
                 let noteKey = `${currentYear}-${currentMonth + 1}-${date}`;
-                let savedNote = localStorage.getItem(noteKey);
+                let dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
+                let savedNote = memoData[dateKey] || ""; // DB에서 불러온 메모 데이터 사용
 
                 let clickEvent = ""; // 기본적으로 클릭 이벤트 없음
 
@@ -407,12 +441,7 @@
             document.getElementById("note-popup").style.display = "none";
         }
 
-        function saveNote() {
-            let note = document.getElementById("note-input").value;
-            localStorage.setItem(`${currentYear}-${currentMonth + 1}-${selectedDate}`, note);
-            closePopup();
-            updateCalendar();
-        }
+
 
         
         function changeMonth(offset) {

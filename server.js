@@ -122,3 +122,29 @@ app.get("/logout", (req, res) => {
 
 // 서버 실행
 app.listen(3000, () => console.log("✅ 서버가 http://localhost:3000 에서 실행 중!"));
+
+app.post('/add-memo', async (req, res) => {
+    const { date, content } = req.body;
+
+    if (!date || !content) {
+        return res.status(400).json({ error: "날짜와 내용을 입력하세요." });
+    }
+
+    try {
+        const query = "INSERT INTO calendar_memos (date, content) VALUES ($1, $2)";
+        await db.query(query, [date, content]);
+        res.status(201).json({ message: "✅ 메모가 추가되었습니다!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "❌ 메모 저장 중 오류 발생" });
+    }
+});
+app.get('/get-memos', async (req, res) => {
+    try {
+        const result = await db.query("SELECT * FROM calendar_memos ORDER BY date");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "❌ 메모 불러오기 실패" });
+    }
+});

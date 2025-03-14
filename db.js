@@ -10,3 +10,5 @@ client.connect()
     .catch(err => console.error("❌ PostgreSQL 연결 실패!", err));
 
 module.exports = client;
+
+//이거 어떻게해어떻게해어떻게해어떻게해
