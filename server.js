@@ -6,10 +6,31 @@ const { Pool } = require("pg");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
 const cors = require('cors');
+const cookieParser = require('cookie-parser'); // Add cookie-parser
+const crypto = require('crypto'); // For encryption and decryption
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors()); // CORS 문제 방지
+app.use(cookieParser()); // Use cookie-parser to handle cookies
+
+const SECRET_KEY = 'your-secret-key'; // A secret key for encryption (must be kept safe)
+
+// Function to encrypt data
+function encrypt(text) {
+    const cipher = crypto.createCipher('aes-256-cbc', SECRET_KEY);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+}
+
+// Function to decrypt data
+function decrypt(encrypted) {
+    const decipher = crypto.createDecipher('aes-256-cbc', SECRET_KEY);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+}
 
 // ✅ PostgreSQL 데이터베이스 연결 설정
 const db = new Pool({
@@ -95,16 +116,17 @@ passport.deserializeUser(async (id, done) => {
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 app.get("/auth/google/callback", passport.authenticate("google", {
-    successRedirect: "/profile",
+    successRedirect: "/",
     failureRedirect: "/"
-}));
-
-// 프로필 페이지
-app.get("/profile", (req, res) => {
-    if (!req.isAuthenticated()) return res.redirect("/");
-    res.render("profile", { user: req.user });
+}), (req, res) => {
+    // 로그인 후 쿠키에 사용자 정보 저장 (암호화)
+    res.cookie('userId', encrypt(req.user.id), { maxAge: 900000, httpOnly: true });
+    res.cookie('userName', encrypt(req.user.name), { maxAge: 900000, httpOnly: true });
+    res.cookie('userEmail', encrypt(req.user.email), { maxAge: 900000, httpOnly: true });
+    res.cookie('userPicture', encrypt(req.user.picture), { maxAge: 900000, httpOnly: true });
 });
 
+// 홈 페이지
 app.get("/", (req, res) => {
     res.render("index");
 });
@@ -126,56 +148,19 @@ app.get("/test", (req, res) => {
     res.render("test");
 });
 
-
 // 로그아웃 처리
 app.get("/logout", (req, res) => {
     req.logout(() => {
+        res.clearCookie('userId');
+        res.clearCookie('userName');
+        res.clearCookie('userEmail');
+        res.clearCookie('userPicture');
         res.redirect("/");
     });
 });
 
 // 서버 실행
-// ✅ 서버 실행
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`✅ 서버가 http://127.0.0.1:${PORT} 에서 실행 중!`);
-});
-
-app.post('/add-memo', async (req, res) => {
-    const { date, content } = req.body;
-
-    console.log("📩 메모 저장 요청 수신:", date, content);
-
-    // 데이터 검증
-    if (!date || typeof content !== "string" || content.trim() === "") {
-        return res.status(400).json({ error: "❌ 날짜와 내용을 올바르게 입력하세요." });
-    }
-
-    try {
-        // ✅ pool.query() 사용하도록 변경
-        const query = "INSERT INTO calendar_memos (date, content) VALUES ($1, $2)";
-        await pool.query(query, [date, content]);
-
-        console.log("✅ 메모 저장 완료");
-        res.status(201).json({ message: "✅ 메모가 추가되었습니다!" });
-    } catch (err) {
-        console.error("❌ 메모 저장 중 오류 발생:", err);
-        res.status(500).json({ error: "❌ 메모 저장 중 오류 발생" });
-    }
-});
-app.get('/get-memos', async (req, res) => {
-    try {
-        // ✅ pool.query() 사용하도록 변경
-        const result = await pool.query("SELECT * FROM calendar_memos ORDER BY date");
-
-        if (!Array.isArray(result.rows)) {
-            return res.status(500).json({ error: "❌ 메모 데이터가 없습니다." });
-        }
-
-        console.log("📜 불러온 메모 데이터:", result.rows);
-        res.json(result.rows);
-    } catch (err) {
-        console.error("❌ 메모 불러오기 실패:", err);
-        res.status(500).json({ error: "❌ 메모 불러오기 실패" });
-    }
 });
