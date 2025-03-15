@@ -148,6 +148,15 @@ app.get("/test", (req, res) => {
     res.render("test");
 });
 
+app.get("/museum", (req, res) => {
+    res.render("museum");
+});
+
+app.get("/member", (req, res) => {
+    res.render("member");
+});
+
+
 // 로그아웃 처리
 app.get("/logout", (req, res) => {
     req.logout(() => {
