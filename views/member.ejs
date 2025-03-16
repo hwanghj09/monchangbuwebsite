@@ -18,7 +18,7 @@
         
         .container {
             margin: 0 auto;
-            background-color: rgb(167, 91, 168);
+            background-color: white;
             height: 112.5vh;
             position: relative;
             display: flex;
@@ -32,7 +32,7 @@
             align-items: center;
             padding: 15px;
             border-bottom: 1px solid #eee;
-            background-color: pink;
+            background-color: lightgray;
             
         }
         
@@ -53,7 +53,7 @@
         .sidebar {
             width: 140px;
             height: 100vh;
-            background-color: pink;
+            background-color: lightgray;
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
             padding-top: 15px;
@@ -116,6 +116,36 @@
     color: #a04ba5;
     font-size: 2rem; /* 기본 크기 */
 }
+.banner {
+    position:absolute;
+left: 140px;
+}
+.profile-1{
+    position: absolute;
+    left:170px;
+    top:100px;
+}
+.role-1{
+    position:absolute;
+    left:480px;
+    top:135px;
+
+}
+.you1{
+    position:absolute;
+    left:400px;
+    top:121px;
+}
+.in1{
+    position: absolute;
+    left:408px;
+    top:170px;
+}
+.X1{
+    position:absolute;
+    left:410px;
+    top:230px;
+}
 
 /* 반응형 스타일 */
 @media screen and (max-width: 768px) {
@@ -148,9 +178,14 @@
     cursor: pointer; /* 포인터 커서 */
     transform: scale(1.1); /* 크기 확대 */
 }
+html, body {
+  overscroll-behavior: none;
+}
     </style>
 </head>
-<body>
+<body> 
+
+      
     <div class="container">
         <div class="header">
             <h1>문화 창작동아리-멤버</h1>
@@ -173,6 +208,31 @@
                     <li><span class="sidebar-icon">💬</span> 기타</li>
                 </ul>
             </div>
+           <!-- <div class="banner">
+                <img src="image/배너.png" width="40%" height="auto">
+                <img src="image/배너.png" width="40%" height="auto">
+            </div>-->
+            <hr>
+                <div class="profile-1">
+                    <img src="image/상시.png" width="20%" height="auto">
+                </div>
+                <div class="you1">
+                    <img src="image/유튭.png" width="10%">
+                </div>
+                <div class="in1">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X1">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-1">
+                    <h2>·캐릭터: 산호초 외계인</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할:기획자, 디자이너, 작곡가, 부장</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+
 
         <div class="q">
             <h2>문화창작동아리</h2>
