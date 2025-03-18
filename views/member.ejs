@@ -19,7 +19,7 @@
         .container {
             margin: 0 auto;
             background-color: rgb(167, 91, 168);
-            height: 112.5vh;
+            height: 225vh;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -30,7 +30,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
             background-color: lightgray;
             
@@ -52,7 +52,7 @@
         
         .sidebar {
             width: 140px;
-            height: 100vh;
+            height: 200vh;
             background-color: lightgray;
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
@@ -123,54 +123,63 @@
     position:absolute;
 left: 140px;
 }
+.name1{
+    position:absolute;
+    left:290px;
+    top: 70px;
+}
 .profile-1{
     position: absolute;
     left:170px;
-    top:100px;
+    top:110px;
 }
 .role-1{
     position:absolute;
     left:480px;
-    top:135px;
+    top:145px;
 
 }
 .you1{
     position:absolute;
     left:400px;
-    top:121px;
+    top:131px;
 }
 .in1{
     position: absolute;
     left:408px;
-    top:170px;
+    top:180px;
 }
 .X1{
     position:absolute;
     left:410px;
-    top:230px;
+    top:240px;
 }
-
+.name2{
+    position:absolute;
+    left:305px;
+    top: 365px;
+}
 .profile-2{
     position: absolute;
     left:170px;
-    top:400px;
+    top:410px;
 }
 .role-2{
     position:absolute;
     left:480px;
-    top:435px;
+    top:445px;
 
 }
 
 .in2{
     position: absolute;
     left:408px;
-    top:470px;
+    top:480px;
 }
 .X2{
     position:absolute;
     left:410px;
-    top:530px;
+    top:540px;
 }
 
 
@@ -286,6 +295,12 @@ left: 140px;
 html, body {
   overscroll-behavior: none;
 }
+hr {
+    position:relative;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 300px;
+}
     </style>
 </head>
 <body> 
@@ -317,9 +332,13 @@ html, body {
                 <img src="image/배너.png" width="40%" height="auto">
                 <img src="image/배너.png" width="40%" height="auto">
             </div>-->
+            <hr>
 
                 <div class="profile-1">
                     <img src="image/상시.png" width="20%" height="auto">
+                </div>
+                <div class="name1">
+                    <img src="image/상이.png" width="40%">
                 </div>
                 <div class="you1">
                     <img src="image/유튭.png" width="10%">
@@ -340,6 +359,9 @@ html, body {
 
                 <div class="profile-2">
                     <img src="image/앵.png" width="20%" height="auto">
+                </div>
+                <div class="name2">
+                    <img src="image/앵이.png" width="40%">
                 </div>
                 <div class="in2">
                     <img src="image/인스타.png" width="6.5%">
