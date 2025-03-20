@@ -36,6 +36,26 @@
             
         }
         
+        .banner {
+            position:absolute;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #624889;
+            z-index:1;
+            width: 100%;
+            height: 15vh;
+            top:78px;
+        }
+
+        .bruce {
+            position:absolute;
+            z-index: 4;
+            left:140px;
+            top:78px;
+            
+        }
         .header h1 {
             font-size: 20px;
             font-weight: bold;
@@ -57,6 +77,7 @@
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
             padding-top: 15px;
+            z-index: 3; /* 선을 뒤로 보내기 */
         }
         
         .sidebar-menu {
@@ -119,10 +140,7 @@
     color: #a04ba5;
     font-size: 2rem; /* 기본 크기 */
 }
-.banner {
-    position:absolute;
-left: 140px;
-}
+
 .name1{
     position:absolute;
     left:290px;
@@ -156,10 +174,11 @@ left: 140px;
 }
 
 .선1 {
-    position:relative;
+    position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
-  top: 300px;
+  top: 370px;
+  z-index: 1; /* 선을 뒤로 보내기 */
 }
 
 .name2{
@@ -192,10 +211,10 @@ left: 140px;
 
 .선2 {
     position:absolute;
-  width: 91.2%; /* 전체 가로 길이로 설정 */
+  width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
   top: 670px;
-  left:128px;
+  z-index: 1; /* 선을 뒤로 보내기 */
 }
 
 .name3{
@@ -229,7 +248,86 @@ left: 140px;
     left:410px;
     top:840px;
 }
+.선3 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 970px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
 
+.name4{
+    position:absolute;
+    left:280px;
+    top: 960px;
+}
+.profile-4{
+    position: absolute;
+    left:170px;
+    top:1010px;
+}
+.role-4{
+    position:absolute;
+    left:480px;
+    top:1045px;
+
+}
+.you4{
+    position:absolute;
+    left:400px;
+    top:1031px;
+    z-index: 3;
+}
+.in4{
+    position: absolute;
+    left:408px;
+    top:1080px;
+}
+.X4{
+    position:absolute;
+    left:410px;
+    top:1140px;
+}
+.선4 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 1270px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name5{
+    position:absolute;
+    left:280px;
+    top: 1250px;
+}
+.profile-5{
+    position: absolute;
+    left:170px;
+    top:1310px;
+}
+.role-5{
+    position:absolute;
+    left:480px;
+    top:1345px;
+
+}
+.you5{
+    position:absolute;
+    left:400px;
+    top:1331px;
+    z-index: 3;
+}
+.in5{
+    position: absolute;
+    left:408px;
+    top:1380px;
+}
+.X5{
+    position:absolute;
+    left:410px;
+    top:1440px;
+}
 /* 반응형 스타일 */
 @media screen and (max-width: 430px) {
     .sidebar {
@@ -354,7 +452,8 @@ html, body {
             </div>
         </div>
 
-        
+        <div class="banner"></div>
+        <div class="bruce"><img src="image/미쳐버린 단체사진.jpg" width="30%"></div>
         <div class="content-wrapper">
             <div class="sidebar">
                 <ul class="sidebar-menu">
@@ -380,7 +479,7 @@ html, body {
                     <img src="image/상이.png" width="40%">
                 </div>
                 <div class="you1">
-                    <img src="image/유튭.png" width="10%">
+                    <a href="https://youtube.com/@asr-t3z6m?si=iLRS42-qif5tcSwF"><img src="image/유튭.png" width="10%"></a>
                 </div>
                 <div class="in1">
                     <img src="image/인스타.png" width="6.5%">
@@ -443,6 +542,59 @@ html, body {
                     <h2>·캐릭터: 달팽이집에 깔린 민달팽이</h2>
                     <h3>&nbsp;</h3>
                     <h2>·역할: 개발총괄</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+                <div class="선3">
+                    <hr>
+                </div>
+
+                <div class="profile-4">
+                    <img src="image/소고기.png" width="20%" height="auto">
+                </div>
+                <div class="name4">
+                    <img src="image/소이.png" width="40%">
+                </div>
+                <div class="you4">
+                    <a href="https://youtube.com/@asr-t3z6m?si=iLRS42-qif5tcSwF"><img src="image/유튭.png" width="10%"></a>
+                </div>
+                <div class="in4">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X4">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-4">
+                    <h2>·캐릭터: 달걀껍질을 쓴 꿀벌</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 기획총괄, 지능당담</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:sojeongwoo9@gmail.com</h2>
+                </div>
+
+                <div class="선4">
+                    <hr>
+                </div>
+
+                <div class="profile-5">
+                    <img src="image/안개꽃.png" width="20%" height="auto">
+                </div>
+                <div class="name5">
+                    <img src="image/안이.png" width="40%">
+                </div>
+                <div class="you5">
+                    <img src="image/유튭.png" width="10%">
+                </div>
+                <div class="in5">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X5">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-5">
+                    <h2>·캐릭터: 화분속 안개꽃</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 작가</h2>
                     <h3>&nbsp;</h3>
                     <h2>·이메일:나중에</h2>
                 </div>
