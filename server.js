@@ -156,6 +156,9 @@ app.get("/member", (req, res) => {
     res.render("member");
 });
 
+app.get("/member2", (req, res) => {
+    res.render("member2");
+});
 
 // 로그아웃 처리
 app.get("/logout", (req, res) => {

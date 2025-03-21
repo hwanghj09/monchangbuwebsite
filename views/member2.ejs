@@ -19,12 +19,12 @@
         .container {
             margin: 0 auto;
             background-color: rgb(167, 91, 168);
-            height: 225vh;
+            height: 250vh;
             position: relative;
             display: flex;
             flex-direction: column;
             border-bottom: 1px solid #eee;
-        }
+                }
         
         .header {
             display: flex;
@@ -32,7 +32,7 @@
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
-            background-color: lightgray;
+            background-color: pink;
             
         }
         
@@ -45,17 +45,18 @@
             background-color: #624889;
             z-index:1;
             width: 100%;
-            height: 15vh;
+            height: 294px;
             top:78px;
+            
         }
 
         .bruce {
             position:absolute;
-            z-index: 4;
-            left:140px;
+            left:45vh;
             top:78px;
-            
-        }
+            z-index: 1;
+            opacity: 0.9; /* 50% 투명도 */
+                }
         .header h1 {
             font-size: 20px;
             font-weight: bold;
@@ -72,17 +73,18 @@
         
         .sidebar {
             width: 140px;
-            height: 200vh;
-            background-color: lightgray;
+            height: 240.2vh;
+            background-color: pink;
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
             padding-top: 15px;
-            z-index: 3; /* 선을 뒤로 보내기 */
+            z-index: 10; /* 선을 뒤로 보내기 */
         }
         
         .sidebar-menu {
             list-style: none;
             padding-left: 10px;
+            z-index: 4;
         }
         
         .sidebar-menu li {
@@ -90,10 +92,12 @@
             text-align: left;
             border-bottom: 1px solid #f5f5f5;
             font-size: 18px;
+            z-index: 4;
         }
         
         .sidebar-icon {
             margin-right: 10px;
+            z-index: 4;
         }
         
 
@@ -141,39 +145,7 @@
     font-size: 2rem; /* 기본 크기 */
 }
 
-.name1{
-    position:absolute;
-    left:290px;
-    top: 70px;
-}
-.profile-1{
-    position: absolute;
-    left:170px;
-    top:110px;
-}
-.role-1{
-    position:absolute;
-    left:480px;
-    top:145px;
-
-}
-.you1{
-    position:absolute;
-    left:400px;
-    top:131px;
-}
-.in1{
-    position: absolute;
-    left:408px;
-    top:180px;
-}
-.X1{
-    position:absolute;
-    left:410px;
-    top:240px;
-}
-
-.선1 {
+.선 {
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
@@ -181,35 +153,39 @@
   z-index: 1; /* 선을 뒤로 보내기 */
 }
 
-.name2{
+.name1{
     position:absolute;
-    left:305px;
-    top: 365px;
+    left:290px;
+    top: 370px;
 }
-.profile-2{
+.profile-1{
     position: absolute;
     left:170px;
     top:410px;
 }
-.role-2{
+.role-1{
     position:absolute;
     left:480px;
     top:445px;
 
 }
-
-.in2{
+.you1{
+    position:absolute;
+    left:400px;
+    top:431px;
+}
+.in1{
     position: absolute;
     left:408px;
     top:480px;
 }
-.X2{
+.X1{
     position:absolute;
     left:410px;
     top:540px;
 }
 
-.선2 {
+.선1 {
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
@@ -217,38 +193,35 @@
   z-index: 1; /* 선을 뒤로 보내기 */
 }
 
-.name3{
+.name2{
     position:absolute;
-    left:280px;
-    top: 660px;
+    left:305px;
+    top: 665px;
 }
-.profile-3{
+.profile-2{
     position: absolute;
     left:170px;
     top:710px;
 }
-.role-3{
+.role-2{
     position:absolute;
     left:480px;
     top:745px;
 
 }
-.you3{
-    position:absolute;
-    left:400px;
-    top:731px;
-}
-.in3{
+
+.in2{
     position: absolute;
     left:408px;
     top:780px;
 }
-.X3{
+.X2{
     position:absolute;
     left:410px;
     top:840px;
 }
-.선3 {
+
+.선2 {
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
@@ -256,39 +229,38 @@
   z-index: 1; /* 선을 뒤로 보내기 */
 }
 
-.name4{
+.name3{
     position:absolute;
     left:280px;
     top: 960px;
 }
-.profile-4{
+.profile-3{
     position: absolute;
     left:170px;
     top:1010px;
 }
-.role-4{
+.role-3{
     position:absolute;
     left:480px;
     top:1045px;
 
 }
-.you4{
+.you3{
     position:absolute;
     left:400px;
     top:1031px;
-    z-index: 3;
 }
-.in4{
+.in3{
     position: absolute;
     left:408px;
     top:1080px;
 }
-.X4{
+.X3{
     position:absolute;
     left:410px;
     top:1140px;
 }
-.선4 {
+.선3 {
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
@@ -296,37 +268,77 @@
   z-index: 1; /* 선을 뒤로 보내기 */
 }
 
-.name5{
+.name4{
     position:absolute;
     left:280px;
-    top: 1250px;
+    top: 1260px;
 }
-.profile-5{
+.profile-4{
     position: absolute;
     left:170px;
     top:1310px;
 }
-.role-5{
+.role-4{
     position:absolute;
     left:480px;
     top:1345px;
 
 }
-.you5{
+.you4{
     position:absolute;
     left:400px;
     top:1331px;
     z-index: 3;
 }
-.in5{
+.in4{
     position: absolute;
     left:408px;
     top:1380px;
 }
-.X5{
+.X4{
     position:absolute;
     left:410px;
     top:1440px;
+}
+.선4 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 1570px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name5{
+    position:absolute;
+    left:280px;
+    top: 1550px;
+}
+.profile-5{
+    position: absolute;
+    left:170px;
+    top:1610px;
+}
+.role-5{
+    position:absolute;
+    left:480px;
+    top:1645px;
+
+}
+.you5{
+    position:absolute;
+    left:400px;
+    top:1631px;
+    z-index: 3;
+}
+.in5{
+    position: absolute;
+    left:408px;
+    top:1680px;
+}
+.X5{
+    position:absolute;
+    left:410px;
+    top:1740px;
 }
 /* 반응형 스타일 */
 @media screen and (max-width: 430px) {
@@ -451,7 +463,8 @@ html, body {
                 <a href="/auth/google"><img src="image/1.png" width="50" height="50"></a>
             </div>
         </div>
-
+        <div class="banner"></div>
+        <div class="bruce"><img src="image/미쳐버린 단체사진.jpg" width="73%"></div>
 
         <div class="content-wrapper">
             <div class="sidebar">
@@ -470,7 +483,11 @@ html, body {
                 <img src="image/배너.png" width="40%" height="auto">
                 <img src="image/배너.png" width="40%" height="auto">
             </div>-->
-            
+
+            <div class="선">
+                <hr>
+            </div>
+
                 <div class="profile-1">
                     <img src="image/상시.png" width="20%" height="auto">
                 </div>
