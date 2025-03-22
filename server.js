@@ -107,7 +107,7 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 app.get("/auth/google/callback", passport.authenticate("google", {
     successRedirect: "/",
-    failureRedirect: "/"
+    failureRedirect: "/profile"
 }), (req, res) => {
     const encryptedName = encrypt(req.user.name);
     console.log("쿠키 저장 시도: ", encryptedName);
