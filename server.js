@@ -4,6 +4,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { Pool } = require('pg');
 const path = require('path');
+const cookieParser = require('cookie-parser');  // Import cookie-parser
 
 // 환경 변수 설정
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
@@ -11,6 +12,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
+const COOKIE_SECRET = 'mysecretcookie'; // Your cookie encryption secret
 
 // PostgreSQL 연결 설정
 const pool = new Pool({
@@ -27,6 +29,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser(COOKIE_SECRET));  // Use cookie-parser with a secret
 
 // 세션 설정
 app.use(session({
