@@ -80,7 +80,7 @@ passport.use(new GoogleStrategy({
     
     // 새 사용자 생성
     const newUser = await pool.query(
-      'INSERT INTO users (google_id, email, display_name, profile_picture) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO users (google_id, email, display_name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
       [
         profile.id,
         profile.emails[0].value,
@@ -128,34 +128,30 @@ app.get('/auth/google/callback',
     failureRedirect: '/login',
   }), (req, res) => {
     try {
-      // 쿠키에 email 저장
       res.cookie('userEmail', req.user.email, {
-        maxAge: 24 * 60 * 60 * 1000*30, // 1일
-        httpOnly: true,             // JavaScript에서 접근 불가 (보안 강화)
-        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 전송 (배포 시 적용)
+        maxAge: 24 * 60 * 60 * 1000*30,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'None'
       });
 
-      res.redirect('/profile'); // 로그인 성공 시 프로필로 이동
+      res.redirect('/profile');
     } catch (error) {
       console.error('Error during the callback handling:', error);
       res.status(500).send('Internal Server Error');
     }
   }
 );
-
-// 프로필 페이지
 app.get('/profile', isLoggedIn, (req, res) => {
   res.send(`
     <h1>프로필</h1>
     <p>이름: ${req.user.display_name}</p>
     <p>이메일: ${req.user.email}</p>
-    <img src="${req.user.profile_picture}" alt="프로필 사진" width="100">
+    <img src="${req.user.picture}" alt="프로필 사진" width="100">
     <p><a href="/logout">로그아웃</a></p>
   `);
 });
 
-// 로그아웃
 app.get('/logout', (req, res) => {
   req.logout(function(err) {
     if (err) { 
