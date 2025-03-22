@@ -105,6 +105,8 @@ passport.deserializeUser(async (id, done) => {
 
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.get("/auth/google/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/profile"
@@ -115,13 +117,14 @@ app.get("/auth/google/callback", passport.authenticate("google", {
     res.cookie('userName', encryptedName, {
         maxAge: 900000,
         path: '/',
-        httpOnly: false,
-        secure: isProduction,
-        sameSite: 'None'
+        httpOnly: false,  // 클라이언트에서 접근 가능
+        secure: isProduction,  // HTTPS에서만 쿠키 전송
+        sameSite: isProduction ? 'None' : 'Lax'  // 개발 환경과 배포 환경 구분
     });
 
     res.redirect("/");
 });
+
 
 
 app.get("/", (req, res) => {
