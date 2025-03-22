@@ -119,12 +119,9 @@ app.get("/auth/google/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/"
 }), (req, res) => {
-    // 로그인 후 쿠키에 사용자 정보 저장 (암호화)
-    res.cookie('userId', encrypt(req.user.id), { maxAge: 900000, httpOnly: true });
     res.cookie('userName', encrypt(req.user.name), { maxAge: 900000, httpOnly: true });
-    res.cookie('userEmail', encrypt(req.user.email), { maxAge: 900000, httpOnly: true });
-    res.cookie('userPicture', encrypt(req.user.picture), { maxAge: 900000, httpOnly: true });
 });
+
 
 // 홈 페이지
 app.get("/", (req, res) => {
@@ -160,17 +157,14 @@ app.get("/member2", (req, res) => {
     res.render("member2");
 });
 
-// 로그아웃 처리
 app.get("/logout", (req, res) => {
     req.logout(() => {
-        res.clearCookie('userId');
         res.clearCookie('userName');
-        res.clearCookie('userEmail');
-        res.clearCookie('userPicture');
         res.redirect("/");
     });
 });
 
+ 
 // 서버 실행
 const PORT = 3000;
 app.listen(PORT, () => {
