@@ -127,24 +127,27 @@ app.get('/auth/google',
 
 // Google 콜백 라우트
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: '/login',
-  }), (req, res) => {
-    try {
-      res.cookie('userEmail', req.user.email, {
-        maxAge: 24 * 60 * 60 * 1000*30,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'None'
-      });
-
-      res.redirect('/profile');
-    } catch (error) {
-      console.error('Error during the callback handling:', error);
-      res.status(500).send('Internal Server Error');
+    passport.authenticate('google', { 
+      failureRedirect: '/login',  // 실패 시 로그인 페이지로 리디렉션
+    }), (req, res) => {
+      try {
+        // 로그인 성공 후 /login 페이지로 리디렉션
+        res.cookie('userEmail', req.user.email, {
+          maxAge: 24 * 60 * 60 * 1000 * 30,  // 쿠키 만료 시간 설정
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',  // 배포 환경에서만 true
+          sameSite: 'None'
+        });
+  
+        // 로그인 후 /login 페이지로 리디렉션
+        res.redirect('/login');
+      } catch (error) {
+        console.error('Error during the callback handling:', error);
+        res.status(500).send('Internal Server Error');
+      }
     }
-  }
-);
+  );
+
 app.get('/profile', isLoggedIn, (req, res) => {
   res.send(`
     <h1>프로필</h1>
