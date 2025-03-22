@@ -115,11 +115,21 @@ app.get('/auth/google',
 
 // Google 콜백 라우트
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: '/login',
-    successRedirect: '/profile' 
-  })
-);
+    passport.authenticate('google', { 
+      failureRedirect: '/login',
+    }), (req, res) => {
+      // 쿠키에 email 저장
+      res.cookie('userEmail', req.user.email, {
+        maxAge: 24 * 60 * 60 * 1000, // 1일
+        httpOnly: true,             // JavaScript에서 접근 불가 (보안 강화)
+        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 전송 (배포 시 적용)
+        sameSite: 'None'
+      });
+  
+      res.redirect('/profile'); // 로그인 성공 시 프로필로 이동
+    }
+  );
+  
 
 // 프로필 페이지
 app.get('/profile', isLoggedIn, (req, res) => {
