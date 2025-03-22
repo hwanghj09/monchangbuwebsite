@@ -20,24 +20,19 @@
             margin: 0 auto;
             background-color: rgb(167, 91, 168);
             height: 250vh;
-            position: absolute;
+            position: relative;
             display: flex;
             flex-direction: column;
             border-bottom: 1px solid #eee;
-            width: 100vw;
                 }
         
         .header {
             display: flex;
-            position: absolute;
             justify-content: space-between;
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
             background-color: pink;
-            width: 100vw;
-            height: 9.8vh;
-            
             
         }
         
@@ -49,19 +44,23 @@
             padding: 10px;
             background-color: #624889;
             z-index:1;
-            width: 100vw;
-            height: 36.9vh;
-            top:9.8vh;
+            width: 100%;
+            height: auto;             /* ← 내용 기반 높이로 설정 */
+            aspect-ratio: 5 / 1;  /* 🎯 가로:세로 비율 5:1 */
+
+            border-bottom: 1px solid #eee;
+            top:78px;
             
         }
 
         .bruce {
             position:absolute;
             left:25vw;
-            top:9.8vh;
+            top:78px;
             z-index: 1;
             opacity: 0.9; /* 50% 투명도 */
-            height: 36vh;
+            width: 49.3vw;
+            
                 }
         .header h1 {
             font-size: 20px;
@@ -78,9 +77,7 @@
         }
         
         .sidebar {
-            position: absolute;
-            top: 9.8vh;
-            width: 17vh;
+            width: 140px;
             height: 240.2vh;
             background-color: pink;
             border-right: 1px solid #eee;
@@ -99,7 +96,7 @@
             padding: 20px 0;
             text-align: left;
             border-bottom: 1px solid #f5f5f5;
-            font-size: 2.5vh;
+            font-size: 18px;
             z-index: 4;
         }
         
@@ -157,51 +154,40 @@
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
-  top: 46.4vh;
+  top: 370px;
   z-index: 1; /* 선을 뒤로 보내기 */
 }
 
-.box1 { 
-    position:absolute;
-    width: 100%;
-    height: 15.1%;
-    top: 46.4vh;
-    left: 20vh;
-    border: 1px dashed gray;
-    z-index: 100;
-}
-
-
 .name1{
     position:absolute;
-    left:36vh;
-    top: 45vh;
+    left:290px;
+    top: 370px;
 }
 .profile-1{
     position: absolute;
-    left:22vh;
-    top:51vh;
+    left:170px;
+    top:410px;
 }
 .role-1{
     position:absolute;
-    left:65.4%;
-    top:56vh;
+    left:480px;
+    top:445px;
 
 }
 .you1{
     position:absolute;
-    left:54.2vh;
-    top:54vh;
+    left:400px;
+    top:431px;
 }
 .in1{
     position: absolute;
-    left:55vh;
-    top:60.5vh;
+    left:408px;
+    top:480px;
 }
 .X1{
     position:absolute;
-    left:55vh;
-    top:67.5vh;
+    left:410px;
+    top:540px;
 }
 
 .선1 {
@@ -483,7 +469,7 @@ html, body {
             </div>
         </div>
         <div class="banner"></div>
-]       <img src="image/미쳐버린 단체사진.jpg" class="bruce">
+        <img src="image/미쳐버린 단체사진.jpg" class="bruce">
 
         <div class="content-wrapper">
             <div class="sidebar">
@@ -503,10 +489,7 @@ html, body {
                 <img src="image/배너.png" width="40%" height="auto">
             </div>-->
 
-            <div class="선">
-                <hr>
-            </div>
-            <div class="box1">
+
                 <div class="profile-1">
                     <img src="image/상시.png" width="20%" height="auto">
                 </div>
@@ -528,7 +511,6 @@ html, body {
                     <h2>·역할: 부장, 작곡가</h2>
                     <h3>&nbsp;</h3>
                     <h2>·이메일:나중에</h2>
-                </div>
                 </div>
 
                 <div class="선1">

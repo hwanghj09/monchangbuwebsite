@@ -20,42 +20,49 @@
             margin: 0 auto;
             background-color: rgb(167, 91, 168);
             height: 250vh;
-            position: relative;
+            position: absolute;
             display: flex;
             flex-direction: column;
             border-bottom: 1px solid #eee;
+            width: 100vw;
                 }
         
         .header {
             display: flex;
+            position: absolute;
             justify-content: space-between;
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
             background-color: pink;
+            width: 100vw;
+            height: 9.8vh;
+            
             
         }
         
         .banner {
-            position:absolute;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #624889;
-            z-index:1;
-            width: 100%;
-            height: 294px;
-            top:78px;
-            
-        }
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #624889;
+  z-index: 1;
+  width: 100vw;
+  top: 9.8vh;
+  height: auto;             /* ← 내용 기반 높이로 설정 */
+  min-height: 260px;        /* ← 너무 찌부되지 않도록 최소 높이 지정! */
+}
 
         .bruce {
             position:absolute;
-            left:45vh;
-            top:78px;
+            left:25vw;
+            top:9.8vh;
             z-index: 1;
             opacity: 0.9; /* 50% 투명도 */
+            height: 37vh;
+            width: 49.3vw;
                 }
         .header h1 {
             font-size: 20px;
@@ -72,7 +79,9 @@
         }
         
         .sidebar {
-            width: 140px;
+            position: absolute;
+            top: 9.8vh;
+            width: 17vh;
             height: 240.2vh;
             background-color: pink;
             border-right: 1px solid #eee;
@@ -91,7 +100,7 @@
             padding: 20px 0;
             text-align: left;
             border-bottom: 1px solid #f5f5f5;
-            font-size: 18px;
+            font-size: 2.5vh;
             z-index: 4;
         }
         
@@ -149,40 +158,52 @@
     position:absolute;
   width: 100%; /* 전체 가로 길이로 설정 */
   height: 2px; /* 두께 조절 */
-  top: 370px;
+  top: 330px;
   z-index: 1; /* 선을 뒤로 보내기 */
+  
 }
+
+.box1 { 
+    position:absolute;
+    width: 100%;
+    height: 15.1%;
+    top: 46.4vh;
+    left: 20vh;
+    border: 1px dashed gray;
+    z-index: 100;
+}
+
 
 .name1{
     position:absolute;
-    left:290px;
-    top: 370px;
+    left:36vw;
+    top: 45vh;
 }
 .profile-1{
     position: absolute;
-    left:170px;
-    top:410px;
+    left:22vw;
+    top:51vh;
 }
 .role-1{
     position:absolute;
-    left:480px;
-    top:445px;
+    left:65.4vw;
+    top:56vh;
 
 }
 .you1{
     position:absolute;
-    left:400px;
-    top:431px;
+    left:54.2vw;
+    top:54vh;
 }
 .in1{
     position: absolute;
-    left:408px;
-    top:480px;
+    left:55vw;
+    top:60.5vh;
 }
 .X1{
     position:absolute;
-    left:410px;
-    top:540px;
+    left:55vw;
+    top:67.5vh;
 }
 
 .선1 {
@@ -464,7 +485,7 @@ html, body {
             </div>
         </div>
         <div class="banner"></div>
-        <div class="bruce"><img src="image/미쳐버린 단체사진.jpg" width="73%"></div>
+]       <img src="image/미쳐버린 단체사진.jpg" class="bruce">
 
         <div class="content-wrapper">
             <div class="sidebar">
@@ -497,7 +518,7 @@ html, body {
                 <div class="you1">
                     <a href="https://youtube.com/@asr-t3z6m?si=iLRS42-qif5tcSwF"><img src="image/유튭.png" width="10%"></a>
                 </div>
-                <div class="in1">
+                <div class="in1">이 시발 ㅈ같은 
                     <a href="https://www.instagram.com/pppppppuu3679/"><img src="image/인스타.png" width="6.5%"></a>
                 </div>
                 <div class="X1">
@@ -509,6 +530,7 @@ html, body {
                     <h2>·역할: 부장, 작곡가</h2>
                     <h3>&nbsp;</h3>
                     <h2>·이메일:나중에</h2>
+                </div>
                 </div>
 
                 <div class="선1">
