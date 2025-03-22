@@ -115,12 +115,16 @@ passport.deserializeUser(async (id, done) => {
 // Google OAuth 로그인 라우트
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
+// Google OAuth 콜백 라우트
 app.get("/auth/google/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/"
 }), (req, res) => {
-    res.cookie('userName', encrypt(req.user.name), { maxAge: 900000, httpOnly: true });
+    // 사용자 이름 암호화 후 쿠키에 저장 (httpOnly 제거, secure 옵션 환경에 맞게 설정)
+    res.cookie('userName', encrypt(req.user.name), { maxAge: 900000, path: '/' });
+    res.redirect("/");
 });
+
 
 
 // 홈 페이지
