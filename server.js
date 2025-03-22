@@ -1,172 +1,144 @@
-const express = require("express");
-const session = require("express-session");
-const bodyParser = require('body-parser');
-const passport = require("passport");
-const { Pool } = require("pg");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const path = require("path");
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const crypto = require('crypto');
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { Pool } = require('pg');
+const path = require('path');
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-app.use(cookieParser());
-
-const SECRET_KEY = 'your-secret-key';
-
-function encrypt(text) {
-    const cipher = crypto.createCipher('aes-256-cbc', SECRET_KEY);
-    let encrypted = cipher.update(text, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    return encrypted;
-}
-
-
-function decrypt(encrypted) {
-    const decipher = crypto.createDecipher('aes-256-cbc', SECRET_KEY);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
-}
-
-const db = new Pool({
-    user: 'hwanghj09',
-    host: 'dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com',
-    database: 'mcb',
-    password: 'bGTMWup7u3rpjAcDasyainqTf37vRFnu',
-    port: 5432,
-});
-
+// 환경 변수 설정
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
 const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
-
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
 
+// PostgreSQL 연결 설정
 const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+  connectionString: DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+// Express 앱 초기화
+const app = express();
 
+// 미들웨어 설정
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 세션 설정
 app.use(session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 24 * 60 * 60 * 1000 // 1일
+  }
 }));
 
+// Passport 설정
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.static('views'));
-
-passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: GOOGLE_CALLBACK_URL
-}, async (accessToken, refreshToken, profile, done) => {
-    const { id, displayName, emails, photos } = profile;
-    const email = emails[0].value;
-    const picture = photos[0].value;
-
-    try {
-        const client = await pool.connect();
-        const result = await client.query(
-            "INSERT INTO users (google_id, email, name, picture) VALUES ($1, $2, $3, $4) ON CONFLICT (google_id) DO UPDATE SET name = $3, picture = $4 RETURNING *;",
-            [id, email, displayName, picture]
-        );
-        client.release();
-        done(null, result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        done(err, null);
-    }
-}));
-
+// 사용자 직렬화/역직렬화
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query("SELECT * FROM users WHERE id = $1;", [id]);
-        client.release();
-        done(null, result.rows[0]);
-    } catch (err) {
-        done(err, null);
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    done(null, result.rows[0]);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// Google 전략 설정
+passport.use(new GoogleStrategy({
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
+  callbackURL: GOOGLE_CALLBACK_URL,
+  passReqToCallback: true
+}, async (req, accessToken, refreshToken, profile, done) => {
+  try {
+    // 기존 사용자 확인
+    const existingUser = await pool.query('SELECT * FROM users WHERE google_id = $1', [profile.id]);
+    
+    if (existingUser.rows.length > 0) {
+      return done(null, existingUser.rows[0]);
     }
+    
+    // 새 사용자 생성
+    const newUser = await pool.query(
+      'INSERT INTO users (google_id, email, display_name, profile_picture) VALUES ($1, $2, $3, $4) RETURNING *',
+      [
+        profile.id,
+        profile.emails[0].value,
+        profile.displayName,
+        profile.photos[0].value
+      ]
+    );
+    
+    return done(null, newUser.rows[0]);
+  } catch (error) {
+    return done(error, null);
+  }
+}));
+
+// 로그인 상태 확인 미들웨어
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
+// 라우트 설정
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-const isProduction = process.env.NODE_ENV === 'production';
-
-app.get("/auth/google/callback", passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/profile"
-}), (req, res) => {
-    const encryptedName = encrypt(req.user.name);
-    console.log("쿠키 저장 시도: ", encryptedName);
-
-    res.cookie('userName', encryptedName, {
-        maxAge: 900000,
-        path: '/',
-        httpOnly: false,  // 클라이언트에서 접근 가능
-        secure: isProduction,  // HTTPS에서만 쿠키 전송
-        sameSite: isProduction ? 'None' : 'Lax'  // 개발 환경과 배포 환경 구분
-    });
-
-    res.redirect("/");
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+// Google 로그인 라우트
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
+// Google 콜백 라우트
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { 
+    failureRedirect: '/login',
+    successRedirect: '/profile' 
+  })
+);
 
-app.get("/", (req, res) => {
-    res.render("index");
+// 프로필 페이지
+app.get('/profile', isLoggedIn, (req, res) => {
+  res.send(`
+    <h1>프로필</h1>
+    <p>이름: ${req.user.display_name}</p>
+    <p>이메일: ${req.user.email}</p>
+    <img src="${req.user.profile_picture}" alt="프로필 사진" width="100">
+    <p><a href="/logout">로그아웃</a></p>
+  `);
 });
 
-app.get("/index", (req, res) => {
-    res.render("index");
+// 로그아웃
+app.get('/logout', (req, res) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
 
-app.get("/calendar", (req, res) => {
-    res.render("calendar");
-});
-
-app.get("/cal", (req, res) => {
-    res.render("cal");
-});
-
-app.get("/test", (req, res) => {
-    res.render("test");
-});
-
-app.get("/museum", (req, res) => {
-    res.render("museum");
-});
-
-app.get("/member", (req, res) => {
-    res.render("member");
-});
-
-app.get("/member2", (req, res) => {
-    res.render("member2");
-});
-
-app.get("/logout", (req, res) => {
-    req.logout(() => {
-        res.clearCookie('userName');
-        res.redirect("/");
-    });
-});
-
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`✅ 서버가 http://127.0.0.1:${PORT} 에서 실행 중!`);
+// 서버 시작
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
+  console.log(`서버가 포트 ${PORT}에서 실행 중입니다`);
 });
