@@ -4,7 +4,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { Pool } = require('pg');
 const path = require('path');
-const cookieParser = require('cookie-parser');  // Import cookie-parser
+const crypto = require('crypto');
 
 // 환경 변수 설정
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
-const COOKIE_SECRET = 'mysecretcookie'; // Your cookie encryption secret
+const ENCRYPTION_SECRET = 'myencryptionsecret'; // 암호화 키 (강력한 비밀 키를 사용하세요)
 
 // PostgreSQL 연결 설정
 const pool = new Pool({
@@ -29,7 +29,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cookieParser(COOKIE_SECRET));  // Use cookie-parser with a secret
 
 // 세션 설정
 app.use(session({
@@ -38,8 +37,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 1일
-    secure: process.env.NODE_ENV === 'production', // 로컬 환경에서는 false, 배포 환경에서는 true
-    httpOnly: true, // JavaScript에서 접근 불가 (보안 강화)
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
     sameSite: 'None'
   }
 }));
@@ -74,14 +73,12 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
-    // 기존 사용자 확인
     const existingUser = await pool.query('SELECT * FROM users WHERE google_id = $1', [profile.id]);
     
     if (existingUser.rows.length > 0) {
       return done(null, existingUser.rows[0]);
     }
-    
-    // 새 사용자 생성
+
     const newUser = await pool.query(
       'INSERT INTO users (google_id, email, display_name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
       [
@@ -99,6 +96,22 @@ passport.use(new GoogleStrategy({
   }
 }));
 
+// 이메일 암호화 함수
+function encryptEmail(email) {
+  const cipher = crypto.createCipher('aes-256-cbc', ENCRYPTION_SECRET);
+  let encrypted = cipher.update(email, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return encrypted;
+}
+
+// 이메일 복호화 함수
+function decryptEmail(encryptedEmail) {
+  const decipher = crypto.createDecipher('aes-256-cbc', ENCRYPTION_SECRET);
+  let decrypted = decipher.update(encryptedEmail, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
 // 로그인 상태 확인 미들웨어
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
@@ -109,10 +122,6 @@ function isLoggedIn(req, res, next) {
 
 // 라우트 설정
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/index', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -127,26 +136,27 @@ app.get('/auth/google',
 
 // Google 콜백 라우트
 app.get('/auth/google/callback', 
-    passport.authenticate('google', { 
-      failureRedirect: '/login',  // 실패 시 로그인 페이지로 리디렉션
-    }), (req, res) => {
-      try {
-        // 로그인 성공 후 /login 페이지로 리디렉션
-        res.cookie('userEmail', req.user.email, {
-          maxAge: 24 * 60 * 60 * 1000 * 30,  // 쿠키 만료 시간 설정
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',  // 배포 환경에서만 true
-          sameSite: 'None'
-        });
-  
-        // 로그인 후 /login 페이지로 리디렉션
-        res.redirect('/login');
-      } catch (error) {
-        console.error('Error during the callback handling:', error);
-        res.status(500).send('Internal Server Error');
-      }
+  passport.authenticate('google', { 
+    failureRedirect: '/login',
+  }), (req, res) => {
+    try {
+      // 이메일을 암호화하여 쿠키에 저장
+      const encryptedEmail = encryptEmail(req.user.email);
+
+      res.cookie('userEmail', encryptedEmail, {
+        maxAge: 24 * 60 * 60 * 1000 * 30,  // 쿠키 만료 시간 설정
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',  // 배포 환경에서만 true
+        sameSite: 'None'
+      });
+
+      res.redirect('/profile');
+    } catch (error) {
+      console.error('Error during the callback handling:', error);
+      res.status(500).send('Internal Server Error');
     }
-  );
+  }
+);
 
 app.get('/profile', isLoggedIn, (req, res) => {
   res.send(`
