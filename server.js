@@ -6,17 +6,16 @@ const { Pool } = require("pg");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
 const cors = require('cors');
-const cookieParser = require('cookie-parser'); // Add cookie-parser
-const crypto = require('crypto'); // For encryption and decryption
+const cookieParser = require('cookie-parser');
+const crypto = require('crypto');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors()); // CORS 문제 방지
-app.use(cookieParser()); // Use cookie-parser to handle cookies
+app.use(cors());
+app.use(cookieParser());
 
-const SECRET_KEY = 'your-secret-key'; // A secret key for encryption (must be kept safe)
+const SECRET_KEY = 'your-secret-key';
 
-// Function to encrypt data
 function encrypt(text) {
     const cipher = crypto.createCipher('aes-256-cbc', SECRET_KEY);
     let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -24,7 +23,7 @@ function encrypt(text) {
     return encrypted;
 }
 
-// Function to decrypt data
+
 function decrypt(encrypted) {
     const decipher = crypto.createDecipher('aes-256-cbc', SECRET_KEY);
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
@@ -32,16 +31,14 @@ function decrypt(encrypted) {
     return decrypted;
 }
 
-// ✅ PostgreSQL 데이터베이스 연결 설정
 const db = new Pool({
-    user: 'hwanghj09', // PostgreSQL 사용자명
-    host: 'dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com', // DB 호스트
-    database: 'mcb', // 데이터베이스 이름
-    password: 'bGTMWup7u3rpjAcDasyainqTf37vRFnu', // 비밀번호
-    port: 5432, // PostgreSQL 기본 포트
+    user: 'hwanghj09',
+    host: 'dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com',
+    database: 'mcb',
+    password: 'bGTMWup7u3rpjAcDasyainqTf37vRFnu',
+    port: 5432,
 });
 
-// Google OAuth 및 PostgreSQL 연결 정보
 const GOOGLE_CLIENT_ID = '908214582199-sqsmujo3eb3utgn6jrhp95tspaallk2d.apps.googleusercontent.com';
 const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
@@ -49,17 +46,14 @@ const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
 
-// ✅ PostgreSQL 연결 설정 (db 대신 pool 사용)
 const pool = new Pool({
     connectionString: DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-// 템플릿 엔진 설정 (EJS)
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));  // views 폴더 경로 설정
+app.set("views", path.join(__dirname, "views"));
 
-// 세션 설정
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
@@ -71,7 +65,6 @@ app.use(passport.session());
 
 app.use(express.static('views'));
 
-// 구글 로그인 전략 설정
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
@@ -95,12 +88,10 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-// 로그인 후 사용자 정보 세션 저장
 passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-// 세션에서 사용자 정보 복원
 passport.deserializeUser(async (id, done) => {
     try {
         const client = await pool.connect();
@@ -112,27 +103,31 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-// Google OAuth 로그인 라우트
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-// Google OAuth 콜백 라우트
 app.get("/auth/google/callback", passport.authenticate("google", {
     successRedirect: "/",
     failureRedirect: "/"
 }), (req, res) => {
-    // 사용자 이름 암호화 후 쿠키에 저장 (httpOnly 제거, secure 옵션 환경에 맞게 설정)
-    res.cookie('userName', encrypt(req.user.name), { maxAge: 900000, path: '/' });
+    const encryptedName = encrypt(req.user.name);
+    console.log("쿠키 저장 시도: ", encryptedName);
+
+    res.cookie('userName', encryptedName, {
+        maxAge: 900000,
+        path: '/',
+        httpOnly: false,
+        secure: isProduction,
+        sameSite: 'None'
+    });
+
     res.redirect("/");
 });
 
 
-
-// 홈 페이지
 app.get("/", (req, res) => {
     res.render("index");
 });
 
-// '/index' URL이 들어오면 'index'로 render
 app.get("/index", (req, res) => {
     res.render("index");
 });
@@ -168,8 +163,6 @@ app.get("/logout", (req, res) => {
     });
 });
 
- 
-// 서버 실행
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`✅ 서버가 http://127.0.0.1:${PORT} 에서 실행 중!`);
