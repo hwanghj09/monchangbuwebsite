@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
-const ENCRYPTION_SECRET = 'myencryptionsecret'; // 암호화 키 (강력한 비밀 키를 사용하세요)
+const ENCRYPTION_SECRET = 'your-secret-key'; // 암호화 키 (24바이트 이상으로 설정해야 함)
 
 // PostgreSQL 연결 설정
 const pool = new Pool({
@@ -37,8 +37,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 1일
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // 로컬 환경에서는 false, 배포 환경에서는 true
+    httpOnly: true, // JavaScript에서 접근 불가 (보안 강화)
     sameSite: 'None'
   }
 }));
@@ -73,12 +73,14 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
+    // 기존 사용자 확인
     const existingUser = await pool.query('SELECT * FROM users WHERE google_id = $1', [profile.id]);
     
     if (existingUser.rows.length > 0) {
       return done(null, existingUser.rows[0]);
     }
-
+    
+    // 새 사용자 생성
     const newUser = await pool.query(
       'INSERT INTO users (google_id, email, display_name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
       [
@@ -96,22 +98,6 @@ passport.use(new GoogleStrategy({
   }
 }));
 
-// 이메일 암호화 함수
-function encryptEmail(email) {
-  const cipher = crypto.createCipher('aes-256-cbc', ENCRYPTION_SECRET);
-  let encrypted = cipher.update(email, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return encrypted;
-}
-
-// 이메일 복호화 함수
-function decryptEmail(encryptedEmail) {
-  const decipher = crypto.createDecipher('aes-256-cbc', ENCRYPTION_SECRET);
-  let decrypted = decipher.update(encryptedEmail, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
-}
-
 // 로그인 상태 확인 미들웨어
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
@@ -120,8 +106,34 @@ function isLoggedIn(req, res, next) {
   res.redirect('/login');
 }
 
+// 암호화 함수
+function encryptEmail(email) {
+  const iv = crypto.randomBytes(16); // 16바이트 IV 생성
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv); // IV와 키를 사용하여 암호화
+  let encrypted = cipher.update(email, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  const ivHex = iv.toString('hex'); // IV를 저장해둡니다
+  return ivHex + ':' + encrypted; // IV와 암호문을 결합하여 반환
+}
+
+// 복호화 함수
+function decryptEmail(encryptedEmail) {
+  const parts = encryptedEmail.split(':');
+  const iv = Buffer.from(parts[0], 'hex'); // 저장된 IV를 사용
+  const encryptedText = parts[1];
+  
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv); // 동일한 IV로 복호화
+  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
 // 라우트 설정
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/index', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -140,13 +152,11 @@ app.get('/auth/google/callback',
     failureRedirect: '/login',
   }), (req, res) => {
     try {
-      // 이메일을 암호화하여 쿠키에 저장
-      const encryptedEmail = encryptEmail(req.user.email);
-
+      const encryptedEmail = encryptEmail(req.user.email); // 이메일을 암호화
       res.cookie('userEmail', encryptedEmail, {
-        maxAge: 24 * 60 * 60 * 1000 * 30,  // 쿠키 만료 시간 설정
+        maxAge: 24 * 60 * 60 * 1000 * 30, // 쿠키 30일 유지
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',  // 배포 환경에서만 true
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'None'
       });
 
@@ -159,10 +169,13 @@ app.get('/auth/google/callback',
 );
 
 app.get('/profile', isLoggedIn, (req, res) => {
+  // 암호화된 이메일 복호화
+  const decryptedEmail = decryptEmail(req.cookies.userEmail);
+  
   res.send(`
     <h1>프로필</h1>
     <p>이름: ${req.user.display_name}</p>
-    <p>이메일: ${req.user.email}</p>
+    <p>이메일: ${decryptedEmail}</p>
     <img src="${req.user.picture}" alt="프로필 사진" width="100">
     <p><a href="/logout">로그아웃</a></p>
   `);
