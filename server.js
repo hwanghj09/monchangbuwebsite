@@ -34,7 +34,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000 // 1일
+    maxAge: 24 * 60 * 60 * 1000, // 1일
+    secure: process.env.NODE_ENV === 'production', // HTTPS에서만 쿠키 전송
+    httpOnly: true,             // 자바스크립트에서 접근 불가
+    sameSite: 'None'            // Cross-site 쿠키 허용
   }
 }));
 
@@ -72,13 +75,16 @@ passport.use(new GoogleStrategy({
     }
     
     // 새 사용자 생성
+    const email = profile.emails && profile.emails[0] ? profile.emails[0].value : null;
+    const photo = profile.photos && profile.photos[0] ? profile.photos[0].value : null;
+
     const newUser = await pool.query(
       'INSERT INTO users (google_id, email, display_name, profile_picture) VALUES ($1, $2, $3, $4) RETURNING *',
       [
         profile.id,
-        profile.emails[0].value,
+        email,
         profile.displayName,
-        profile.photos[0].value
+        photo
       ]
     );
     
@@ -100,9 +106,6 @@ function isLoggedIn(req, res, next) {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-app.get('/index', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  });
 
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -115,21 +118,23 @@ app.get('/auth/google',
 
 // Google 콜백 라우트
 app.get('/auth/google/callback', 
-    passport.authenticate('google', { 
-      failureRedirect: '/login',
-    }), (req, res) => {
-      // 쿠키에 email 저장
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    try {
       res.cookie('userEmail', req.user.email, {
         maxAge: 24 * 60 * 60 * 1000, // 1일
-        httpOnly: true,             // JavaScript에서 접근 불가 (보안 강화)
-        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 전송 (배포 시 적용)
-        sameSite: 'None'
+        httpOnly: true,             // 자바스크립트에서 접근 불가
+        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 쿠키 전송
+        sameSite: 'None'            // Cross-site 쿠키 허용
       });
-  
-      res.redirect('/profile'); // 로그인 성공 시 프로필로 이동
+
+      res.redirect('/profile');
+    } catch (error) {
+      console.error('Login callback error:', error);
+      res.redirect('/login');
     }
-  );
-  
+  }
+);
 
 // 프로필 페이지
 app.get('/profile', isLoggedIn, (req, res) => {
@@ -146,7 +151,7 @@ app.get('/profile', isLoggedIn, (req, res) => {
 app.get('/logout', (req, res) => {
   req.logout(function(err) {
     if (err) { return next(err); }
-    res.redirect('/');
+    res.redirect('/login'); // 로그인 페이지로 리다이렉트
   });
 });
 
