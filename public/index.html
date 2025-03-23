@@ -1,13 +1,169 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>홈페이지</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한국어 앱 인터페이스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            margin: 0 auto;
+            background-color: white;
+            height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .ghost-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        .sidebar {
+            width: 70px;
+            height: calc(100vh - 50px);
+            background-color: white;
+            border-right: 1px solid #eee;
+            float: left;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 0;
+            text-align: center;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .sidebar-icon {
+            display: block;
+            margin: 0 auto;
+            width: 24px;
+            height: 24px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-label {
+            font-size: 12px;
+        }
+
+        .content {
+            margin-left: 70px;
+            padding: 15px;
+        }
+
+        .content-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .post {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .post-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+
+        .login-btn {
+            padding: 8px 16px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <h1>안녕하세요!</h1>
-  <p>몬창부 웹사이트에 오신 것을 환영합니다.</p>
-  <a href="/login">로그인</a>
+    <div class="container">
+        <div class="header">
+            <h1>곤트라 챗봇 둘러보기</h1>
+            <div class="ghost-icon">👻</div>
+        </div>
+
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><span class="sidebar-icon">🏠</span><span class="sidebar-label">홈</span></li>
+                <li><span class="sidebar-icon">📅</span><span class="sidebar-label">캘린더</span></li>
+                <li><span class="sidebar-icon">🍲</span><span class="sidebar-label">식단</span></li>
+                <li><span class="sidebar-icon">👤</span><span class="sidebar-label">마이페이지</span></li>
+                <li><span class="sidebar-icon">🔥</span><span class="sidebar-label">이벤트</span></li>
+                <li><span class="sidebar-icon">🔖</span><span class="sidebar-label">북마크</span></li>
+                <li><span class="sidebar-icon">🔔</span><span class="sidebar-label">알림</span></li>
+                <li><span class="sidebar-icon">💬</span><span class="sidebar-label">기타</span></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="content-header">
+                <h2>여기에 콘텐츠</h2>
+                <button id="auth-link" class="login-btn" onclick="window.location='/auth/google'">로그인</button>
+            </div>
+
+            <div class="post">
+                <div class="post-title">공지사항</div>
+                <div class="post-content">이곳에 게시글 내용이 표시됩니다.</div>
+                <div class="post-date">2025.3.8</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      // 로그인 여부 확인
+      fetch('/api/user')
+        .then(response => response.json())
+        .then(data => {
+          const authLink = document.getElementById('auth-link');
+  
+          if (data.isAuthenticated) {
+            authLink.textContent = '로그아웃';
+            authLink.href = '/logout';
+          } else {
+            authLink.textContent = '로그인';
+            authLink.href = '/auth/google';
+          }
+        })
+        .catch(error => console.error('사용자 상태 확인 중 오류 발생:', error));
+    </script>
 </body>
 </html>

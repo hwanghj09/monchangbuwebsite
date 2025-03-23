@@ -146,7 +146,7 @@ app.get('/auth/google/callback',
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None'
       });
-      res.redirect('/profile');
+      res.redirect('/');
     } catch (error) {
       console.error('Error during the callback handling:', error);
       res.status(500).send('Internal Server Error');
@@ -162,6 +162,10 @@ app.get('/logout', (req, res) => {
     }
     res.redirect('/');
   });
+});
+
+app.get('/api/user', (req, res) => {
+  res.json({ isAuthenticated: req.isAuthenticated() });
 });
 
 const PORT = process.env.PORT || 3000;
