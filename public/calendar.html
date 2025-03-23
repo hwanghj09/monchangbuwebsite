@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캘린더</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            padding: 20px;
+            border-right: 1px solid #eee;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: white;
+            height: 100vh;
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .calendar {
+            padding: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .day.today {
+            background-color: #4285F4;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .calendar {
+      display: flex;
+      flex-wrap: wrap;
+      width: 280px;
+    }
+    .calendar div {
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      text-align: center;
+      line-height: 40px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .calendar div:hover {
+      background-color: #e0e0e0;
+    }
+    .description-box {
+      display: none;
+      margin-top: 10px;
+    }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>메뉴</h2>
+        <ul>
+            <li><a href="#">홈</a></li>
+            <li><a href="#">캘린더</a></li>
+            <li><a href="#">설정</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>캘린더</h1>
+            <div class="ghost-icon">📅</div>
+        </div>
+
+        <div class="calendar">
+            <div class="calendar-header">
+                <button class="nav-btn" id="prevMonth">◀</button>
+                <h2 id="currentMonth"></h2>
+                <button class="nav-btn" id="nextMonth">▶</button>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+    </div>
+    <div class="description-box" id="description-box">
+        <textarea id="description" rows="4" cols="50" placeholder="설명을 작성하세요..."></textarea><br>
+        <button onclick="saveEvent()">올리기</button>
+      </div>
+    <script>
+       const days = Array.from({ length: 30 }, (_, i) => i + 1); // 1일부터 30일까지
+    const calendar = document.getElementById('calendar');
+    const descriptionBox = document.getElementById('description-box');
+    const descriptionInput = document.getElementById('description');
+    let selectedDate = null;
+
+    // 날짜를 캘린더에 추가
+    days.forEach(day => {
+      const dayElement = document.createElement('div');
+      dayElement.textContent = day;
+      dayElement.addEventListener('click', () => openDescriptionBox(day));
+      calendar.appendChild(dayElement);
+    });
+
+    // 날짜 클릭 시 설명 박스 열기
+    function openDescriptionBox(day) {
+      selectedDate = day;
+      descriptionBox.style.display = 'block';
+    }
+
+    // 설명 저장
+    function saveEvent() {
+      const description = descriptionInput.value.trim();
+      if (description && selectedDate) {
+        fetch('/save-event', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: selectedDate,
+            description: description,
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('설명이 저장되었습니다!');
+          descriptionInput.value = ''; // 텍스트 박스 비우기
+          descriptionBox.style.display = 'none'; // 박스 숨기기
+        })
+        .catch(error => {
+          alert('오류가 발생했습니다.');
+          console.error(error);
+        });
+      } else {
+        alert('설명을 작성해주세요.');
+      }
+    }
+    </script>
+</body>
+</html>

@@ -95,13 +95,13 @@ passport.use(new GoogleStrategy({
     return done(error, null);
   }
 }));
-
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect('/login');
 }
+
 
 // 암호화 함수
 function encryptEmail(email) {
@@ -128,8 +128,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+app.get('/calendar', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'calendar.html'));
 });
 
 app.get('/auth/google',
@@ -167,6 +167,31 @@ app.get('/logout', (req, res) => {
 app.get('/api/user', (req, res) => {
   res.json({ isAuthenticated: req.isAuthenticated() });
 });
+
+// 캘린더 이벤트 저장 API
+app.post('/save-event', isLoggedIn, async (req, res) => {
+  const { date, description } = req.body;
+  const userId = req.user.id; // 로그인된 사용자 ID
+
+  if (!date || !description) {
+    return res.status(400).json({ error: '날짜와 설명을 모두 작성해주세요.' });
+  }
+
+  try {
+    // 이벤트 저장
+    const result = await pool.query(
+      'INSERT INTO cal (user_id, date, description) VALUES ($1, $2, $3) RETURNING *',
+      [userId, date, description]
+    );
+    
+    res.json({ message: '이벤트가 저장되었습니다.' });
+  } catch (error) {
+    console.error('DB 저장 오류:', error);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  }
+});
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
