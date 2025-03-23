@@ -19,7 +19,7 @@
         .container {
             margin: 0 auto;
             background-color: rgb(167, 91, 168);
-            height: 250vh;
+            height: 2000px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -78,7 +78,7 @@
         
         .sidebar {
             width: 140px;
-            height: 240.2vh;
+            height: 1922px;
             background-color: pink;
             border-right: 1px solid #eee;
             border-bottom: 1px solid #eee;
@@ -649,3 +649,656 @@ html, body {
     </div>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문화창작동아리 - 캘린더</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            background-color: pink;
+        }
+        
+        .container {
+            margin: 0 auto;
+            background-color: rgb(167, 91, 168);
+            height: 2000px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #eee;
+                }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background-color: pink;
+            
+        }
+        
+        .banner {
+            position:absolute;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #624889;
+            z-index:1;
+            width: 100%;
+            height: auto;             /* ← 내용 기반 높이로 설정 */
+            aspect-ratio: 5 / 1;  /* 🎯 가로:세로 비율 5:1 */
+
+            border-bottom: 1px solid #eee;
+            top:78px;
+            
+        }
+
+        .bruce {
+            position:absolute;
+            left:25vw;
+            top:78px;
+            z-index: 1;
+            opacity: 0.9; /* 50% 투명도 */
+            width: 49.3vw;
+            
+                }
+        .header h1 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .ghost-icon {
+            font-size: 24px;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 140px;
+            height: 1922px;
+            background-color: pink;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding-top: 15px;
+            z-index: 10; /* 선을 뒤로 보내기 */
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding-left: 10px;
+            z-index: 4;
+        }
+        
+        .sidebar-menu li {
+            padding: 20px 0;
+            text-align: left;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 18px;
+            z-index: 4;
+        }
+        
+        .sidebar-icon {
+            margin-right: 10px;
+            z-index: 4;
+        }
+        
+
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+   
+        .q {
+    position: absolute;
+    bottom: -280px;
+    left: 23%;
+    transform: translateX(-50%);
+}
+
+.q h2 {
+    color: #a04ba5;
+    font-size: 2rem; /* 기본 크기 */
+}
+
+.q h3 {
+    color: rgb(49, 49, 255);
+    font-size: 1rem; /* 기본 크기 */
+}
+.q h4{
+    font-weight: normal;
+}
+
+.w {
+    position: absolute;
+    bottom: -415px;
+    right: 23%;
+    transform: translateX(50%);
+}
+
+.w h2 {
+    color: #a04ba5;
+    font-size: 2rem; /* 기본 크기 */
+}
+
+.선 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 370px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name1{
+    position:absolute;
+    left:290px;
+    top: 370px;
+}
+.profile-1{
+    position: absolute;
+    left:170px;
+    top:410px;
+}
+.role-1{
+    position:absolute;
+    left:480px;
+    top:445px;
+
+}
+.you1{
+    position:absolute;
+    left:400px;
+    top:431px;
+}
+.in1{
+    position: absolute;
+    left:408px;
+    top:480px;
+}
+.X1{
+    position:absolute;
+    left:410px;
+    top:540px;
+}
+
+.선1 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 670px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name2{
+    position:absolute;
+    left:305px;
+    top: 665px;
+}
+.profile-2{
+    position: absolute;
+    left:170px;
+    top:710px;
+}
+.role-2{
+    position:absolute;
+    left:480px;
+    top:745px;
+
+}
+
+.in2{
+    position: absolute;
+    left:408px;
+    top:780px;
+}
+.X2{
+    position:absolute;
+    left:410px;
+    top:840px;
+}
+
+.선2 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 970px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name3{
+    position:absolute;
+    left:280px;
+    top: 960px;
+}
+.profile-3{
+    position: absolute;
+    left:170px;
+    top:1010px;
+}
+.role-3{
+    position:absolute;
+    left:480px;
+    top:1045px;
+
+}
+.you3{
+    position:absolute;
+    left:400px;
+    top:1031px;
+}
+.in3{
+    position: absolute;
+    left:408px;
+    top:1080px;
+}
+.X3{
+    position:absolute;
+    left:410px;
+    top:1140px;
+}
+.선3 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 1270px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name4{
+    position:absolute;
+    left:280px;
+    top: 1260px;
+}
+.profile-4{
+    position: absolute;
+    left:170px;
+    top:1310px;
+}
+.role-4{
+    position:absolute;
+    left:480px;
+    top:1345px;
+
+}
+.you4{
+    position:absolute;
+    left:400px;
+    top:1331px;
+    z-index: 3;
+}
+.in4{
+    position: absolute;
+    left:408px;
+    top:1380px;
+}
+.X4{
+    position:absolute;
+    left:410px;
+    top:1440px;
+}
+.선4 {
+    position:absolute;
+  width: 100%; /* 전체 가로 길이로 설정 */
+  height: 2px; /* 두께 조절 */
+  top: 1570px;
+  z-index: 1; /* 선을 뒤로 보내기 */
+}
+
+.name5{
+    position:absolute;
+    left:280px;
+    top: 1550px;
+}
+.profile-5{
+    position: absolute;
+    left:170px;
+    top:1610px;
+}
+.role-5{
+    position:absolute;
+    left:480px;
+    top:1645px;
+
+}
+.you5{
+    position:absolute;
+    left:400px;
+    top:1631px;
+    z-index: 3;
+}
+.in5{
+    position: absolute;
+    left:408px;
+    top:1680px;
+}
+.X5{
+    position:absolute;
+    left:410px;
+    top:1740px;
+}
+/* 반응형 스타일 */
+@media screen and (max-width: 430px) {
+    .sidebar {
+            width: 70px;
+            height: 100vh;
+            background-color: lightgray;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding-top: 2px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding-left: 1px;
+        }
+        
+        .sidebar-menu li {
+            padding: 20px 0;
+            text-align: left;
+            border-bottom: 0.5px solid #f5f5f5;
+            font-size: 11px;
+        }
+        
+        .sidebar-icon {
+            margin-right: 1px;
+        }
+.profile-1{
+    position: absolute;
+    left:85px;
+    width:130%;
+}
+.role-1{
+    top: 118px;
+}
+
+    .role-1 h2{
+    position:absolute;
+    font-size: 1rem;
+    left:-220px;
+}
+        .you1{
+            width:90%;
+            left: 200px;
+            top:108px
+        }
+        .in1{
+            width: 100%;
+            left:205px;
+            top:135px;
+        }
+        .X1{
+            width:90%;
+            left:204px;
+            top:162px;
+        }
+        .profile-2{
+    position: absolute;
+    left:85px;
+    width:130%;
+    top:220px;
+}
+        .role-2{
+    top: 238px;
+}
+
+    .role-2 h2{
+    position:absolute;
+    font-size: 1rem;
+    left:-220px;
+}
+        .you2{
+            width:90%;
+            left: 200px;
+            top:228px
+        }
+        .in2{
+            width: 100%;
+            left:205px;
+            top:255px;
+        }
+        .X2{
+            width:90%;
+            left:204px;
+            top:282px;
+        }
+        .q{
+            left:150px;
+        }
+        .q h2{
+            font-size:36px;
+        }
+
+}
+
+
+/* 사이드바 메뉴 확장 효과 */
+.sidebar-menu li {
+    padding: 20px 10px; /* 기본 패딩 */
+    transition: all 0.3s ease-in-out; /* 부드러운 애니메이션 */
+}
+
+.sidebar-menu li:hover {
+    padding-left: 20px; /* 마우스를 올리면 왼쪽으로 확장 */
+    background-color: rgba(255, 255, 255, 0.3); /* 배경색 약간 변경 */
+    cursor: pointer; /* 포인터 커서 */
+    transform: scale(1.1); /* 크기 확대 */
+}
+html, body {
+  overscroll-behavior: none;
+}
+
+    </style>
+</head>
+<body> 
+
+      
+    <div class="container">
+        <div class="header">
+            <h1>문화 창작동아리-멤버</h1>
+            <div class="ghost-icon">
+                <a href="/auth/google"><img src="image/1.png" width="50" height="50"></a>
+            </div>
+        </div>
+        <div class="banner"></div>
+        <img src="image/미쳐버린 단체사진.jpg" class="bruce">
+
+        <div class="content-wrapper">
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="/index" style="text-decoration: none; color: inherit;"><span class="sidebar-icon">🏠</span> 홈</a></li>
+                    <li><a href="/calendar" style="text-decoration: none; color: inherit;"><span class="sidebar-icon">📅</span> 캘린더</a></li>
+                    <li><a href="/museum" style="text-decoration: none; color: inherit;"><span class="sidebar-icon">🏛️</span> 박물관</li></a>
+                    <li><a href="/member" style="text-decoration: none; color: inherit; font-weight: bold;"><span class="sidebar-icon">👤</span> 멤버</li></a>
+                    <li><span class="sidebar-icon">🔥</span> 이벤트</li>
+                    <li><span class="sidebar-icon">🔖</span> 북마크</li>
+                    <li><span class="sidebar-icon">🔔</span> 알림</li>
+                    <li><span class="sidebar-icon">💬</span> 기타</li>
+                </ul>
+            </div>
+           <!-- <div class="banner">
+                <img src="image/배너.png" width="40%" height="auto">
+                <img src="image/배너.png" width="40%" height="auto">
+            </div>-->
+
+
+                <div class="profile-1">
+                    <img src="image/상시.png" width="20%" height="auto">
+                </div>
+                <div class="name1">
+                    <img src="image/상이.png" width="40%">
+                </div>
+                <div class="you1">
+                    <a href="https://youtube.com/@asr-t3z6m?si=iLRS42-qif5tcSwF"><img src="image/유튭.png" width="10%"></a>
+                </div>
+                <div class="in1">
+                    <a href="https://www.instagram.com/pppppppuu3679/"><img src="image/인스타.png" width="6.5%"></a>
+                </div>
+                <div class="X1">
+                    <a href="https://x.com/aga04743744264"><img src="image/X.avif" width="8%"></a>
+                </div>
+                <div class="role-1">
+                    <h2>·캐릭터: 산호초 외계인</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 부장, 작곡가</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+
+                <div class="선1">
+                    <hr>
+                </div>
+
+                <div class="profile-2">
+                    <img src="image/앵.png" width="20%" height="auto">
+                </div>
+                <div class="name2">
+                    <img src="image/앵이.png" width="40%">
+                </div>
+                <div class="in2">
+                    <a href="https://www.instagram.com/neco2_uoi/"><img src="image/인스타.png" width="6.5%"></a>
+                </div>
+                <div class="X2">
+                    <a href="https://x.com/meolwing129"><img src="image/X.avif" width="8%"></a>
+                </div>
+                <div class="role-2">
+                    <h2>·캐릭터: 목소리 없는 게</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 아트 총괄</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+
+                <div class="선2">
+                    <hr>
+                </div>
+
+                <div class="profile-3">
+                    <img src="image/양고기.png" width="20%" height="auto">
+                </div>
+                <div class="name3">
+                    <img src="image/양이.png" width="40%">
+                </div>
+                <div class="you3">
+                    <img src="image/유튭.png" width="10%">
+                </div>
+                <div class="in3">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X3">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-3">
+                    <h2>·캐릭터: 달팽이집에 깔린 민달팽이</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 개발총괄</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+                <div class="선3">
+                    <hr>
+                </div>
+
+                <div class="profile-4">
+                    <img src="image/소고기.png" width="20%" height="auto">
+                </div>
+                <div class="name4">
+                    <img src="image/소이.png" width="40%">
+                </div>
+                <div class="you4">
+                    <a href="https://youtube.com/@asr-t3z6m?si=iLRS42-qif5tcSwF"><img src="image/유튭.png" width="10%"></a>
+                </div>
+                <div class="in4">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X4">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-4">
+                    <h2>·캐릭터: 달걀껍질을 쓴 꿀벌</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 기획총괄, 지능당담</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:sojeongwoo9@gmail.com</h2>
+                </div>
+
+                <div class="선4">
+                    <hr>
+                </div>
+
+                <div class="profile-5">
+                    <img src="image/안개꽃.png" width="20%" height="auto">
+                </div>
+                <div class="name5">
+                    <img src="image/안이.png" width="40%">
+                </div>
+                <div class="you5">
+                    <img src="image/유튭.png" width="10%">
+                </div>
+                <div class="in5">
+                    <img src="image/인스타.png" width="6.5%">
+                </div>
+                <div class="X5">
+                    <img src="image/X.avif" width="8%">
+                </div>
+                <div class="role-5">
+                    <h2>·캐릭터: 화분속 안개꽃</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·역할: 작가</h2>
+                    <h3>&nbsp;</h3>
+                    <h2>·이메일:나중에</h2>
+                </div>
+
+        <div class="q">
+            <h2>문화창작동아리</h2>
+            <h4>멤버:</h4>
+            <h4>상시,앵,양고기,소고기,안개꽃</h4>
+            <h2>SNS</h2>
+            <a href="https://youtube.com/channel/UC1-qO1S6v3jpyIF_MdmsIEQ?si=9mAaM5jNI4h2PS8w" style="text-decoration: none; color: inherit;"><h3>유튜브</h3></a>
+            <a href="https://www.instagram.com/culture_creating_club?igsh=MWIyYTRnNjRuZGRxZQ%3D%3D&utm_source=qr" style="text-decoration: none; color: inherit;"><h3>인스타그램</h3></a>
+            <a href="https://x.com/imsi657719?s=21" style="text-decoration: none; color: inherit;"><h3>X</h3></a>
+        </div>
+        <div class="w">
+            <h2>소개</h2>
+            <p>여러 창작자들이 모여 운영하는 작은 동아리.</p>
+            <p>다같이 모여 아이디어를 나누고 협동하며 다양한 창작물을 만드는 팀.</p>
+            <h2>문의</h2>
+            <p>전화:+1 010-1228-0911</p>
+            <p>warudowawa10@gmail.com</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+        </div>
+
+
+
+        </div>
+    </div>
+</body>
+</html>
+
