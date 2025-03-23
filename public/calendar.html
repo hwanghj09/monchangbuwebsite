@@ -101,27 +101,25 @@
             font-size: 18px;
             cursor: pointer;
         }
-        .calendar {
-      display: flex;
-      flex-wrap: wrap;
-      width: 280px;
-    }
-    .calendar div {
-      width: 40px;
-      height: 40px;
-      margin: 5px;
-      text-align: center;
-      line-height: 40px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
-    .calendar div:hover {
-      background-color: #e0e0e0;
-    }
-    .description-box {
-      display: none;
-      margin-top: 10px;
-    }
+
+        .calendar div {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            text-align: center;
+            line-height: 40px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .calendar div:hover {
+            background-color: #e0e0e0;
+        }
+
+        .description-box {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -153,56 +151,66 @@
     <div class="description-box" id="description-box">
         <textarea id="description" rows="4" cols="50" placeholder="설명을 작성하세요..."></textarea><br>
         <button onclick="saveEvent()">올리기</button>
-      </div>
+    </div>
+
     <script>
-       const days = Array.from({ length: 30 }, (_, i) => i + 1); // 1일부터 30일까지
-    const calendar = document.getElementById('calendar');
-    const descriptionBox = document.getElementById('description-box');
-    const descriptionInput = document.getElementById('description');
-    let selectedDate = null;
+        const calendarGrid = document.getElementById('calendarGrid');
+        const descriptionBox = document.getElementById('description-box');
+        const descriptionInput = document.getElementById('description');
+        let selectedDate = null;
 
-    // 날짜를 캘린더에 추가
-    days.forEach(day => {
-      const dayElement = document.createElement('div');
-      dayElement.textContent = day;
-      dayElement.addEventListener('click', () => openDescriptionBox(day));
-      calendar.appendChild(dayElement);
-    });
+        // 30일을 배열로 저장 (여기에 날짜 추가)
+        const days = Array.from({ length: 30 }, (_, i) => i + 1);
 
-    // 날짜 클릭 시 설명 박스 열기
-    function openDescriptionBox(day) {
-      selectedDate = day;
-      descriptionBox.style.display = 'block';
-    }
+        // 날짜를 캘린더에 추가
+        function renderCalendar() {
+            calendarGrid.innerHTML = ''; // 이전 날짜들 초기화
 
-    // 설명 저장
-    function saveEvent() {
-      const description = descriptionInput.value.trim();
-      if (description && selectedDate) {
-        fetch('/save-event', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            date: selectedDate,
-            description: description,
-          }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          alert('설명이 저장되었습니다!');
-          descriptionInput.value = ''; // 텍스트 박스 비우기
-          descriptionBox.style.display = 'none'; // 박스 숨기기
-        })
-        .catch(error => {
-          alert('오류가 발생했습니다.');
-          console.error(error);
-        });
-      } else {
-        alert('설명을 작성해주세요.');
-      }
-    }
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.classList.add('day');
+                dayElement.textContent = day;
+                dayElement.addEventListener('click', () => openDescriptionBox(day));
+                calendarGrid.appendChild(dayElement);
+            });
+        }
+
+        // 날짜 클릭 시 설명 박스 열기
+        function openDescriptionBox(day) {
+            selectedDate = day;
+            descriptionBox.style.display = 'block';
+        }
+
+        // 설명 저장
+        function saveEvent() {
+            const description = descriptionInput.value.trim();
+            if (description && selectedDate) {
+                fetch('/save-event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        date: selectedDate,
+                        description: description,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('설명이 저장되었습니다!');
+                    descriptionInput.value = ''; // 텍스트 박스 비우기
+                    descriptionBox.style.display = 'none'; // 박스 숨기기
+                })
+                .catch(error => {
+                    alert('오류가 발생했습니다.');
+                    console.error(error);
+                });
+            } else {
+                alert('설명을 작성해주세요.');
+            }
+        }
+
+        renderCalendar(); // 캘린더 렌더링
     </script>
 </body>
 </html>
