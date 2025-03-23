@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
-const ENCRYPTION_SECRET = 'your-secret-key'; // 암호화 키 (24바이트 이상으로 설정해야 함)
+const ENCRYPTION_SECRET = crypto.randomBytes(32).toString('hex'); // 32바이트 암호화 키 생성
 
 // PostgreSQL 연결 설정
 const pool = new Pool({
@@ -73,14 +73,12 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
-    // 기존 사용자 확인
     const existingUser = await pool.query('SELECT * FROM users WHERE google_id = $1', [profile.id]);
     
     if (existingUser.rows.length > 0) {
       return done(null, existingUser.rows[0]);
     }
-    
-    // 새 사용자 생성
+
     const newUser = await pool.query(
       'INSERT INTO users (google_id, email, display_name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
       [
@@ -90,7 +88,7 @@ passport.use(new GoogleStrategy({
         profile.photos[0].value
       ]
     );
-    
+
     return done(null, newUser.rows[0]);
   } catch (error) {
     console.error('Error during Google OAuth process:', error);
@@ -98,7 +96,6 @@ passport.use(new GoogleStrategy({
   }
 }));
 
-// 로그인 상태 확인 미들웨어
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -108,21 +105,19 @@ function isLoggedIn(req, res, next) {
 
 // 암호화 함수
 function encryptEmail(email) {
-  const iv = crypto.randomBytes(16); // 16바이트 IV 생성
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv); // IV와 키를 사용하여 암호화
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv);
   let encrypted = cipher.update(email, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  const ivHex = iv.toString('hex'); // IV를 저장해둡니다
-  return ivHex + ':' + encrypted; // IV와 암호문을 결합하여 반환
+  return iv.toString('hex') + ':' + encrypted;
 }
 
 // 복호화 함수
 function decryptEmail(encryptedEmail) {
   const parts = encryptedEmail.split(':');
-  const iv = Buffer.from(parts[0], 'hex'); // 저장된 IV를 사용
+  const iv = Buffer.from(parts[0], 'hex');
   const encryptedText = parts[1];
-  
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv); // 동일한 IV로 복호화
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_SECRET), iv);
   let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
@@ -133,33 +128,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/index', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Google 로그인 라우트
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-// Google 콜백 라우트
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: '/login',
-  }), (req, res) => {
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     try {
-      const encryptedEmail = encryptEmail(req.user.email); // 이메일을 암호화
+      const encryptedEmail = encryptEmail(req.user.email);
       res.cookie('userEmail', encryptedEmail, {
-        maxAge: 24 * 60 * 60 * 1000 * 30, // 쿠키 30일 유지
+        maxAge: 24 * 60 * 60 * 1000 * 30,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None'
       });
-
       res.redirect('/profile');
     } catch (error) {
       console.error('Error during the callback handling:', error);
@@ -168,22 +154,9 @@ app.get('/auth/google/callback',
   }
 );
 
-app.get('/profile', isLoggedIn, (req, res) => {
-  // 암호화된 이메일 복호화
-  const decryptedEmail = decryptEmail(req.cookies.userEmail);
-  
-  res.send(`
-    <h1>프로필</h1>
-    <p>이름: ${req.user.display_name}</p>
-    <p>이메일: ${decryptedEmail}</p>
-    <img src="${req.user.picture}" alt="프로필 사진" width="100">
-    <p><a href="/logout">로그아웃</a></p>
-  `);
-});
-
 app.get('/logout', (req, res) => {
-  req.logout(function(err) {
-    if (err) { 
+  req.logout(err => {
+    if (err) {
       console.error('Error during logout:', err);
       return res.status(500).send('Internal Server Error');
     }
@@ -191,8 +164,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// 서버 시작
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`서버가 포트 ${PORT}에서 실행 중입니다`);
 });
