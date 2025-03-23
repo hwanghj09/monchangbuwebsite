@@ -168,10 +168,43 @@ app.get('/api/user', (req, res) => {
   res.json({ isAuthenticated: req.isAuthenticated() });
 });
 
-// 캘린더 이벤트 저장 API
+app.get('/api/events', isLoggedIn, async (req, res) => {
+  const userId = req.user.id;
+  
+  try {
+    const result = await pool.query(
+      'SELECT date, description, id FROM cal WHERE user_id = $1 ORDER BY date ASC',
+      [userId]
+    );
+    
+    // 클라이언트에서 사용하기 쉬운 형식으로 데이터 변환
+    const events = {};
+    result.rows.forEach(row => {
+      // 날짜 형식 변환 (YYYY-MM-DD)
+      const date = new Date(row.date);
+      const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      
+      if (!events[dateKey]) {
+        events[dateKey] = [];
+      }
+      
+      events[dateKey].push({
+        id: row.id,
+        description: row.description
+      });
+    });
+    
+    res.json({ events });
+  } catch (error) {
+    console.error('이벤트 조회 오류:', error);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  }
+});
+
+// 캘린더 이벤트 저장 API 개선
 app.post('/save-event', isLoggedIn, async (req, res) => {
   const { date, description } = req.body;
-  const userId = req.user.id; // 로그인된 사용자 ID
+  const userId = req.user.id;
 
   if (!date || !description) {
     return res.status(400).json({ error: '날짜와 설명을 모두 작성해주세요.' });
@@ -180,17 +213,46 @@ app.post('/save-event', isLoggedIn, async (req, res) => {
   try {
     // 이벤트 저장
     const result = await pool.query(
-      'INSERT INTO cal (user_id, date, description) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO cal (user_id, date, description) VALUES ($1, $2, $3) RETURNING id',
       [userId, date, description]
     );
     
-    res.json({ message: '이벤트가 저장되었습니다.' });
+    res.json({ 
+      success: true, 
+      message: '이벤트가 저장되었습니다.',
+      eventId: result.rows[0].id
+    });
   } catch (error) {
     console.error('DB 저장 오류:', error);
     res.status(500).json({ error: '서버 오류가 발생했습니다.' });
   }
 });
 
+// 이벤트 삭제 API 추가
+app.delete('/api/events/:id', isLoggedIn, async (req, res) => {
+  const eventId = req.params.id;
+  const userId = req.user.id;
+  
+  try {
+    // 해당 이벤트가 현재 로그인한 사용자의 것인지 확인
+    const checkResult = await pool.query(
+      'SELECT * FROM cal WHERE id = $1 AND user_id = $2',
+      [eventId, userId]
+    );
+    
+    if (checkResult.rows.length === 0) {
+      return res.status(403).json({ error: '해당 이벤트를 삭제할 권한이 없습니다.' });
+    }
+    
+    // 이벤트 삭제
+    await pool.query('DELETE FROM cal WHERE id = $1', [eventId]);
+    
+    res.json({ success: true, message: '이벤트가 삭제되었습니다.' });
+  } catch (error) {
+    console.error('이벤트 삭제 오류:', error);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+  }
+});
 
 
 const PORT = process.env.PORT || 3000;
