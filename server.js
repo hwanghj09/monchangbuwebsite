@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_SECRET = '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';
 const GOOGLE_CALLBACK_URL = 'https://monchangbuwebsite.onrender.com/auth/google/callback';
 const DATABASE_URL = 'postgresql://hwanghj09:bGTMWup7u3rpjAcDasyainqTf37vRFnu@dpg-cv7ei1tumphs738hfiqg-a.oregon-postgres.render.com/mcb';
 const SESSION_SECRET = 'mysecret';
-const ENCRYPTION_SECRET = crypto.randomBytes(32).toString('hex'); // 32바이트 암호화 키 생성
+const ENCRYPTION_SECRET = 'a8f9e4b1c7d3f6a2e9b5c1d7f3a4b8e2'
 
 // PostgreSQL 연결 설정
 const pool = new Pool({
